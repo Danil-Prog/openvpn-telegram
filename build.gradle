@@ -1,0 +1,39 @@
+buildscript {
+    ext {
+        slf4jVersion = "2.0.17"
+        apacheCommonsNetVersion = "3.11.1"
+    }
+}
+
+plugins {
+    id "java"
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group = "org.openvpn"
+version = "0.0.1 Release"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    /* Apache telnet */
+    implementation "commons-net:commons-net:${apacheCommonsNetVersion}"
+
+    /* Logger */
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+
+    /* Testing */
+    testImplementation platform("org.junit:junit-bom:5.10.0")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+
+test {
+    useJUnitPlatform()
+}
+kotlin {
+    jvmToolchain(21)
+}
