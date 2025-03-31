@@ -1,5 +1,6 @@
 package org.openvpn.telegram;
 
+import org.openvpn.telegram.entity.CommandLineArguments;
 import org.openvpn.telegram.entity.ConnectionParams;
 import org.openvpn.telegram.telnet.ITelnetClient;
 import org.openvpn.telegram.telnet.TelnetClientDefault;
@@ -18,9 +19,11 @@ public class Launcher {
     public static void main(String[] args) {
         logger.info("Starting OpenVPN monitoring...");
 
-        final ConnectionParams connectionParams = ArgumentUtils.parseConnectionParams(args);
+        final CommandLineArguments commandLineArguments = ArgumentUtils.parseConnectionParams(args);
 
         TelnetEventManager eventManager = new TelnetEventManager(new HashMap<>());
+
+        var connectionParams = new ConnectionParams(commandLineArguments.ip(), commandLineArguments.port());
 
         ITelnetClient telnetClient = new TelnetClientDefault(connectionParams);
         telnetClient.connect();

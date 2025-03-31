@@ -2,12 +2,12 @@ buildscript {
     ext {
         slf4jVersion = "2.0.17"
         apacheCommonsNetVersion = "3.11.1"
+        telegramBotVersion = "8.3.0"
     }
 }
 
 plugins {
     id "java"
-    id 'org.jetbrains.kotlin.jvm'
 }
 
 group = "org.openvpn"
@@ -22,6 +22,9 @@ dependencies {
     /* Apache telnet */
     implementation "commons-net:commons-net:${apacheCommonsNetVersion}"
 
+    /* Telegram bot  */
+    implementation "com.github.pengrad:java-telegram-bot-api:${telegramBotVersion}"
+
     /* Logger */
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
 
@@ -33,7 +36,4 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
-kotlin {
-    jvmToolchain(21)
 }
