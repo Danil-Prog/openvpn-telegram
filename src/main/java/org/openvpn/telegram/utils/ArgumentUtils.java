@@ -26,7 +26,7 @@ public class ArgumentUtils {
                     port = Integer.parseInt(args[i + 1]);
                 }
 
-                if (args[i].equals("--bot-token")) {
+                if (args[i].equals("--token")) {
                     botToken = args[i + 1];
                 }
 

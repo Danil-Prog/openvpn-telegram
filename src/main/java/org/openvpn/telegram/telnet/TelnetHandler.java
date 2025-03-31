@@ -35,9 +35,12 @@ public class TelnetHandler {
                     String line = reader.readLine();
 
                     if (line.contains("common_name")) {
-
+                        System.out.print("Connected client: " + line.replace(">CLIENT:ENV,common_name=", ""));
                     }
 
+                    if (line.contains("untrusted_ip")) {
+                        System.out.println(". Untrusted IP: " + line.replace(">CLIENT:ENV,untrusted_ip=", ""));
+                    }
 //                    reader.lines().filter(line -> line.contains("common_name") || line.contains("untrusted_ip")).forEach(System.out::println);
                 }
 
