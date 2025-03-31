@@ -1,4 +1,4 @@
-package org.openvpn.telegram.telnet.event;
+package org.openvpn.telegram.telnet.listeners;
 
 public interface ITelnetEventListener {
 

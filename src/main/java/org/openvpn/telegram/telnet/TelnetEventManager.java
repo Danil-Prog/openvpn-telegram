@@ -1,7 +1,7 @@
 package org.openvpn.telegram.telnet;
 
-import org.openvpn.telegram.telnet.event.ITelnetEventListener;
-import org.openvpn.telegram.telnet.event.TelnetEventType;
+import org.openvpn.telegram.telnet.listeners.ITelnetEventListener;
+import org.openvpn.telegram.telnet.listeners.TelnetEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

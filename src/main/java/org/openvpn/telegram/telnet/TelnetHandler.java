@@ -3,6 +3,10 @@ package org.openvpn.telegram.telnet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 /**
  * Responsible for the status of the connection to the telnet server,
  * event notifications for subscribers
@@ -19,9 +23,27 @@ public class TelnetHandler {
         this.telnetClient = telnetClient;
     }
 
-    public synchronized void handle() {
-        while (telnetClient.isConnected()) {
+    public void handle() {
+        logger.info("Telnet connection established.");
 
+        while (telnetClient.isConnected()) {
+            try {
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(telnetClient.getInputStream()));
+
+                while (reader.ready()) {
+                    String line = reader.readLine();
+
+                    if (line.contains("common_name")) {
+
+                    }
+
+//                    reader.lines().filter(line -> line.contains("common_name") || line.contains("untrusted_ip")).forEach(System.out::println);
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -29,3 +51,6 @@ public class TelnetHandler {
         return eventManager;
     }
 }
+
+// common_name
+// untrusted_ip

@@ -7,29 +7,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketException;
 
 public class TelnetClientDefault implements ITelnetClient {
 
-    private final ConnectionParams connectionParams;
+    private final Long RECONNECT_TIME = 10000L;
 
     private static final Logger logger = LoggerFactory.getLogger(TelnetClientDefault.class);
 
-    private org.apache.commons.net.telnet.TelnetClient telnetClient;
+    private final ConnectionParams connectionParams;
+
+    private final TelnetClient telnetClient;
 
     public TelnetClientDefault(ConnectionParams connectionParams) {
         this.connectionParams = connectionParams;
+        telnetClient = new TelnetClient();
     }
 
     @Override
-    public void connect(ConnectionParams connectionParams) throws Exception {
-        if (telnetClient == null) {
-            telnetClient = new TelnetClient();
+    public void connect() {
+        try {
+//            configure();
+            telnetClient.connect(connectionParams.ip(), connectionParams.port());
+        } catch (IOException e) {
+            logger.error("Failed to connect to telnet client, reason: {}", e.getMessage());
+            throw new RuntimeException(e);
         }
 
-        telnetClientConfiguration();
-
-        telnetClient.connect(connectionParams.ip(), connectionParams.port());
         logger.info("Successful connected to {}:{}", connectionParams.ip(), connectionParams.port());
     }
 
@@ -44,6 +49,10 @@ public class TelnetClientDefault implements ITelnetClient {
         }
     }
 
+    public InputStream getInputStream() {
+        return telnetClient.getInputStream();
+    }
+
     @Override
     public Connection getConnection() {
         return null;
@@ -51,11 +60,48 @@ public class TelnetClientDefault implements ITelnetClient {
 
     @Override
     public Boolean isConnected() {
-        return telnetClient != null && telnetClient.isConnected() && telnetClient.isAvailable();
+        boolean connected = telnetClient.isAvailable();
+
+        if (connected) {
+            return true;
+        } else {
+            int attempts = 0;
+
+            while (attempts < 3) {
+                try {
+
+                    // Attempt to reinstall connect to server
+                    reconnect();
+
+                    // Check if connect restored
+                    if (telnetClient.isConnected()) {
+                        logger.info("Successful reconnected to {}:{}", connectionParams.ip(), connectionParams.port());
+                        return true;
+                    }
+
+                    Thread.sleep(RECONNECT_TIME);
+
+                } catch (IOException e) {
+                    logger.error("Attempt reconnected to telnet server num {} failed, reason: {}", attempts, e.getMessage());
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    logger.error("Interrupted while waiting for telnet server to reconnect", e);
+                    throw new RuntimeException(e);
+                }
+
+                attempts++;
+            }
+        }
+
+        return false;
     }
 
-    private void telnetClientConfiguration() throws SocketException {
+    private void configure() throws SocketException {
         telnetClient.setKeepAlive(true);
         telnetClient.setConnectTimeout(10000);
+    }
+
+    private void reconnect() throws IOException {
+        this.telnetClient.connect(connectionParams.ip(), connectionParams.port());
     }
 }
