@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +16,8 @@ public class TelnetEventManager {
 
     private final Logger logger = LoggerFactory.getLogger(TelnetEventManager.class);
 
-    public TelnetEventManager(Map<String, List<ITelnetEventListener>> listeners) {
-        this.listeners = listeners;
+    public TelnetEventManager() {
+        this.listeners = new HashMap<>();
     }
 
     public void subscribe(TelnetEventType eventType, ITelnetEventListener listener) {

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 /**
  * Responsible for the status of the connection to the telnet server,
@@ -18,8 +19,8 @@ public class TelnetHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(TelnetHandler.class);
 
-    public TelnetHandler(TelnetEventManager eventManager, ITelnetClient telnetClient) {
-        this.eventManager = eventManager;
+    public TelnetHandler(ITelnetClient telnetClient) {
+        this.eventManager = new TelnetEventManager();
         this.telnetClient = telnetClient;
     }
 
