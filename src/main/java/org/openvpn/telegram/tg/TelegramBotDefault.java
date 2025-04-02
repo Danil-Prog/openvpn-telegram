@@ -4,31 +4,42 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import jakarta.annotation.PostConstruct;
+import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TelegramBotDefault {
 
-    private final TelegramBot telegramBot;
-    private final String adminChatId;
+    private final TelegramBot bot;
+    private final TelegramBotProperties properties;
 
-    public TelegramBotDefault(String token, String chatId) {
-        this.telegramBot = new TelegramBot(token);
-        this.adminChatId = chatId;
-        this.init();
+    private final Logger logger = LoggerFactory.getLogger(TelegramBotDefault.class);
+
+    @Autowired
+    public TelegramBotDefault(TelegramBot bot, TelegramBotProperties properties) {
+        this.bot = bot;
+        this.properties = properties;
     }
 
     /**
      * Run initialization logic telegram bot
      */
+    @PostConstruct
     private void init() {
-        System.out.println("Initializing Telegram Bot...");
+        logger.info("Initializing Telegram Bot...");
+        String adminChatId = properties.getChat();
 
-        telegramBot.setUpdatesListener(updates -> {
+        bot.setUpdatesListener(updates -> {
                     for (Update update : updates) {
                         String message = update.message().text();
 
                         if (message.startsWith("/bot")) {
                             SendMessage sendMessage = new SendMessage(adminChatId, "Hi, running monitoring OpenVPN server...");
-                            telegramBot.execute(sendMessage);
+                            bot.execute(sendMessage);
                         }
                     }
                     return UpdatesListener.CONFIRMED_UPDATES_ALL;

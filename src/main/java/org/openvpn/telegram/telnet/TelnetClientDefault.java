@@ -1,41 +1,45 @@
 package org.openvpn.telegram.telnet;
 
 import org.apache.commons.net.telnet.TelnetClient;
+import org.openvpn.telegram.configuration.properties.TelnetConnectionProperties;
 import org.openvpn.telegram.entity.Connection;
-import org.openvpn.telegram.entity.ConnectionParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
 
+@Component
 public class TelnetClientDefault implements ITelnetClient {
 
     private final Long RECONNECT_TIME = 10000L;
 
     private static final Logger logger = LoggerFactory.getLogger(TelnetClientDefault.class);
 
-    private final ConnectionParams connectionParams;
+    private final TelnetConnectionProperties telnetConnectionProperties;
 
     private final TelnetClient telnetClient;
 
-    public TelnetClientDefault(ConnectionParams connectionParams) {
-        this.connectionParams = connectionParams;
-        telnetClient = new TelnetClient();
+    @Autowired
+    public TelnetClientDefault(TelnetConnectionProperties telnetConnectionProperties, TelnetClient telnetClient) {
+        this.telnetConnectionProperties = telnetConnectionProperties;
+        this.telnetClient = telnetClient;
     }
 
     @Override
     public void connect() {
         try {
 //            configure();
-            telnetClient.connect(connectionParams.ip(), connectionParams.port());
+            telnetClient.connect(telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
         } catch (IOException e) {
             logger.error("Failed to connect to telnet client, reason: {}", e.getMessage());
             throw new RuntimeException(e);
         }
 
-        logger.info("Successful connected to {}:{}", connectionParams.ip(), connectionParams.port());
+        logger.info("Successful connected to {}:{}", telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
     }
 
     @Override
@@ -75,7 +79,7 @@ public class TelnetClientDefault implements ITelnetClient {
 
                     // Check if connect restored
                     if (telnetClient.isConnected()) {
-                        logger.info("Successful reconnected to {}:{}", connectionParams.ip(), connectionParams.port());
+                        logger.info("Successful reconnected to {}:{}", telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
                         return true;
                     }
 
@@ -102,6 +106,6 @@ public class TelnetClientDefault implements ITelnetClient {
     }
 
     private void reconnect() throws IOException {
-        this.telnetClient.connect(connectionParams.ip(), connectionParams.port());
+        this.telnetClient.connect(telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
     }
 }
