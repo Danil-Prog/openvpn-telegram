@@ -8,9 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.SocketException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 @Component
 public class TelnetClientDefault implements ITelnetClient {
@@ -53,8 +54,14 @@ public class TelnetClientDefault implements ITelnetClient {
         }
     }
 
-    public InputStream getInputStream() {
-        return telnetClient.getInputStream();
+    @Override
+    public BufferedReader getStreamReader() {
+        return new BufferedReader(new InputStreamReader(telnetClient.getInputStream()));
+    }
+
+    @Override
+    public OutputStream getStreamWriter() {
+        return telnetClient.getOutputStream();
     }
 
     @Override
@@ -98,11 +105,6 @@ public class TelnetClientDefault implements ITelnetClient {
         }
 
         return false;
-    }
-
-    private void configure() throws SocketException {
-        telnetClient.setKeepAlive(true);
-        telnetClient.setConnectTimeout(10000);
     }
 
     private void reconnect() throws IOException {

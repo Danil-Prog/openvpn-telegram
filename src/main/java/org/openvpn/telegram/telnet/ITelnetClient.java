@@ -2,7 +2,8 @@ package org.openvpn.telegram.telnet;
 
 import org.openvpn.telegram.entity.Connection;
 
-import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.OutputStream;
 
 public interface ITelnetClient {
 
@@ -14,5 +15,7 @@ public interface ITelnetClient {
 
     Boolean isConnected();
 
-    InputStream getInputStream();
+    BufferedReader getStreamReader();
+
+    OutputStream getStreamWriter();
 }

@@ -57,7 +57,7 @@ Parameters
 Run app
 
 ```shell
-java -jar build/libs/openvpn-telegram-{version} Release.jar --ip localhost --port 7505 -bt {token} --chat-id {id}
+gradle bootRun --args='--telnet.connection.host={localhost} --telnet.connection.port={7505} --telegram.bot.token={token} --telegram.bot.chat={chatId}'
 ```
 
 **Software work in mode Daemon, connected to OpenVPN server by telnet.**

@@ -7,13 +7,13 @@ public class TelegramBotProperties {
 
     private String token;
 
-    private String chat;
+    private Long chat;
 
     public String getToken() {
         return token;
     }
 
-    public String getChat() {
+    public Long getChat() {
         return chat;
     }
 
@@ -21,7 +21,7 @@ public class TelegramBotProperties {
         this.token = token;
     }
 
-    public void setChat(String chat) {
+    public void setChat(Long chat) {
         this.chat = chat;
     }
 }

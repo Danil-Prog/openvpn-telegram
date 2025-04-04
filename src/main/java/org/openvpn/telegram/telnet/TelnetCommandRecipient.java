@@ -9,22 +9,20 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
- * Responsible for the status of the connection to the telnet server,
- * event notifications for subscribers
+ * Receives and processes telnet messages, generates events
  */
 @Component
-public class TelnetHandler {
+public class TelnetCommandRecipient {
 
     private final TelnetEventManager eventManager;
     private final ITelnetClient telnetClient;
 
-    private static final Logger logger = LoggerFactory.getLogger(TelnetHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(TelnetCommandRecipient.class);
 
     @Autowired
-    public TelnetHandler(@Qualifier("telnetClientDefault") ITelnetClient telnetClient) {
+    public TelnetCommandRecipient(@Qualifier("telnetClientDefault") ITelnetClient telnetClient) {
         this.eventManager = new TelnetEventManager();
         this.telnetClient = telnetClient;
     }
@@ -36,11 +34,11 @@ public class TelnetHandler {
         while (telnetClient.isConnected()) {
             try {
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(telnetClient.getInputStream()));
+                BufferedReader reader = telnetClient.getStreamReader();
 
                 while (reader.ready()) {
                     String line = reader.readLine();
-
+                    System.out.println(line);
                     if (line.contains("common_name")) {
                         System.out.print("Connected client: " + line.replace(">CLIENT:ENV,common_name=", ""));
                     }
@@ -48,7 +46,11 @@ public class TelnetHandler {
                     if (line.contains("untrusted_ip")) {
                         System.out.println(". Untrusted IP: " + line.replace(">CLIENT:ENV,untrusted_ip=", ""));
                     }
-//                    reader.lines().filter(line -> line.contains("common_name") || line.contains("untrusted_ip")).forEach(System.out::println);
+
+                    if (line.contains("SUCCESS: pid=")) {
+                        System.out.println(". PID= " + line.replace("SUCCESS: pid=", ""));
+                    }
+
                 }
 
             } catch (IOException e) {
@@ -61,6 +63,3 @@ public class TelnetHandler {
         return eventManager;
     }
 }
-
-// common_name
-// untrusted_ip
