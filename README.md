@@ -1,15 +1,16 @@
 # 🌐 openvpn-telegram
 
+<img height="200" src="docs/icon.png" width="200"/>
+
 OpenVPN telegram bot notifier.
+
 
 ## Features
 
 - get list users connections
 - kill user connection process (with the possibility of reconnection)
 - received notifier if user connected to VPN server
-
 # Installation and configuration
-
 Configure your OpenVpn server, open the management port:
 
 ```shell

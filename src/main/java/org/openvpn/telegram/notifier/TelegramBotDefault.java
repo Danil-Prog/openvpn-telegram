@@ -41,6 +41,10 @@ public class TelegramBotDefault {
      */
     @PostConstruct
     public void init() {
+        new Thread(this::telegramBotStart).start();
+    }
+
+    private void telegramBotStart() {
         logger.info("Initializing Telegram Bot...");
         Long administrator = properties.getChat();
 

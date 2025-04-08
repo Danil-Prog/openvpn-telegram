@@ -1,5 +1,6 @@
 package org.openvpn.telegram.telnet;
 
+import jakarta.annotation.PreDestroy;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.openvpn.telegram.configuration.properties.TelnetConnectionProperties;
 import org.openvpn.telegram.entity.Connection;
@@ -43,6 +44,7 @@ public class TelnetClientDefault implements ITelnetClient {
         logger.info("Successful connected to {}:{}", telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
     }
 
+    @PreDestroy
     @Override
     public void disconnect() {
         logger.info("Trying disconnecting telnet server..");

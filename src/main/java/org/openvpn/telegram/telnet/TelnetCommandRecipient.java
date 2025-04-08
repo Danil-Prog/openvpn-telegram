@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,28 +40,25 @@ public class TelnetCommandRecipient {
         new Thread(this::listenToTelnet).start();
     }
 
-    public void listenToTelnet() {
-        logger.info("Telnet connection established.");
+    private void listenToTelnet() {
+        logger.info("Start listen to telnet messages...");
 
         while (telnetClient.isConnected()) {
             try {
 
                 BufferedReader reader = telnetClient.getStreamReader();
-                List<String> lines = new ArrayList<>();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println("Received: " + line);
-                    lines.add(line);
-                }
 
-                telnetMessageParsers.forEach(parser -> {
-                            TelnetEvent generatedEvent = parser.parse(lines);
+                while (reader.ready()) {
 
-                            if (generatedEvent != null) {
-                                eventManager.fire(generatedEvent);
+                    telnetMessageParsers.forEach(parser -> {
+                                TelnetEvent generatedEvent = parser.parse(reader.lines().toList());
+
+                                if (generatedEvent != null) {
+                                    eventManager.fire(generatedEvent);
+                                }
                             }
-                        }
-                );
+                    );
+                }
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -70,7 +66,5 @@ public class TelnetCommandRecipient {
         }
     }
 
-    public TelnetEventManager getEventManager() {
-        return eventManager;
-    }
+    private void
 }
