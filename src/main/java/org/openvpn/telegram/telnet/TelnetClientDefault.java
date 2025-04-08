@@ -29,18 +29,13 @@ public class TelnetClientDefault implements ITelnetClient {
     public TelnetClientDefault(TelnetConnectionProperties telnetConnectionProperties, TelnetClient telnetClient) {
         this.telnetConnectionProperties = telnetConnectionProperties;
         this.telnetClient = telnetClient;
+        connect();
     }
 
     @Override
     public void connect() {
-        try {
-//            configure();
-            telnetClient.connect(telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
-        } catch (IOException e) {
-            logger.error("Failed to connect to telnet client, reason: {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-
+        telnetClient.setConnectTimeout(3000);
+        this.reconnect();
         logger.info("Successful connected to {}:{}", telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
     }
 
@@ -73,7 +68,8 @@ public class TelnetClientDefault implements ITelnetClient {
 
     @Override
     public Boolean isConnected() {
-        boolean connected = telnetClient.isAvailable();
+        boolean connected = telnetClient.isConnected();
+        System.out.println("Connected: " + connected);
 
         if (connected) {
             return true;
@@ -92,11 +88,9 @@ public class TelnetClientDefault implements ITelnetClient {
                         return true;
                     }
 
+                    logger.info("Attempt #{} failed.. retry", attempts);
                     Thread.sleep(RECONNECT_TIME);
 
-                } catch (IOException e) {
-                    logger.error("Attempt reconnected to telnet server num {} failed, reason: {}", attempts, e.getMessage());
-                    throw new RuntimeException(e);
                 } catch (InterruptedException e) {
                     logger.error("Interrupted while waiting for telnet server to reconnect", e);
                     throw new RuntimeException(e);
@@ -104,12 +98,16 @@ public class TelnetClientDefault implements ITelnetClient {
 
                 attempts++;
             }
-        }
 
-        return false;
+            throw new RuntimeException("Failed to connect to telnet server");
+        }
     }
 
-    private void reconnect() throws IOException {
-        this.telnetClient.connect(telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
+    private void reconnect() {
+        try {
+            this.telnetClient.connect(telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
+        } catch (IOException e) {
+            logger.error("Failed to connect to telnet client, reason: {}", e.getMessage());
+        }
     }
 }
