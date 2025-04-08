@@ -65,6 +65,4 @@ public class TelnetCommandRecipient {
             }
         }
     }
-
-    private void
 }
