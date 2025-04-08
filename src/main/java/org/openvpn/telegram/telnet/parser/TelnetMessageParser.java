@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface TelnetMessageParser<T extends TelnetEvent> {
 
-    TelnetEvent parse(List<String> lines);
+    T parse(List<String> lines);
 
 }

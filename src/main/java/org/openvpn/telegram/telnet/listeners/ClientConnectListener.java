@@ -7,6 +7,11 @@ import org.springframework.stereotype.Component;
 public class ClientConnectListener implements ITelnetEventListener<ClientConnectedEvent> {
 
     @Override
+    public Class<ClientConnectedEvent> getSupportedEventType() {
+        return ClientConnectedEvent.class;
+    }
+
+    @Override
     public void onEvent(ClientConnectedEvent event) {
         System.out.println("Client connected: " + event.username());
     }

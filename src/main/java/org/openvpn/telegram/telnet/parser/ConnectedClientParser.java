@@ -15,7 +15,7 @@ public class ConnectedClientParser implements TelnetMessageParser<ClientConnecte
     @Override
     public ClientConnectedEvent parse(List<String> lines) {
         return lines.stream()
-                .filter(line -> line.startsWith(START_WITH_USERNAME))
+                .filter(line -> line.contains(START_WITH_USERNAME))
                 .map(line -> {
                     String username = line.replace(START_WITH_USERNAME, "");
                     return new ClientConnectedEvent(username, Instant.now());
