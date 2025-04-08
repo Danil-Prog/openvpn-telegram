@@ -1,10 +1,14 @@
 package org.openvpn.telegram.telnet.listeners;
 
-public class ClientDisconnectListener implements ITelnetEventListener {
+import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ClientDisconnectListener implements ITelnetEventListener<ClientDisconnectedEvent> {
 
     @Override
-    public void publish(String message) {
-        System.out.println("Client disconnected: " + message);
+    public void onEvent(ClientDisconnectedEvent event) {
+        System.out.println("Client disconnected: " + event.username());
     }
 
 }

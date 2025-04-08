@@ -1,6 +1,8 @@
 package org.openvpn.telegram.telnet;
 
 import jakarta.annotation.PostConstruct;
+import org.openvpn.telegram.telnet.events.TelnetEvent;
+import org.openvpn.telegram.telnet.parser.TelnetMessageParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Receives and processes telnet messages, generates events
@@ -18,40 +22,47 @@ public class TelnetCommandRecipient {
 
     private final TelnetEventManager eventManager;
     private final ITelnetClient telnetClient;
+    private final List<TelnetMessageParser<TelnetEvent>> telnetMessageParsers;
 
     private static final Logger logger = LoggerFactory.getLogger(TelnetCommandRecipient.class);
 
     @Autowired
-    public TelnetCommandRecipient(@Qualifier("telnetClientDefault") ITelnetClient telnetClient) {
-        this.eventManager = new TelnetEventManager();
+    public TelnetCommandRecipient(
+            @Qualifier("telnetClientDefault") ITelnetClient telnetClient,
+            TelnetEventManager eventManager,
+            List<TelnetMessageParser<TelnetEvent>> telnetMessageParsers) {
+        this.telnetMessageParsers = telnetMessageParsers;
+        this.eventManager = eventManager;
         this.telnetClient = telnetClient;
     }
 
     @PostConstruct
     public void init() {
+        new Thread(this::listenToTelnet).start();
+    }
+
+    public void listenToTelnet() {
         logger.info("Telnet connection established.");
 
         while (telnetClient.isConnected()) {
             try {
 
                 BufferedReader reader = telnetClient.getStreamReader();
-
-                while (reader.ready()) {
-                    String line = reader.readLine();
-                    System.out.println(line);
-                    if (line.contains("common_name")) {
-                        System.out.print("Connected client: " + line.replace(">CLIENT:ENV,common_name=", ""));
-                    }
-
-                    if (line.contains("untrusted_ip")) {
-                        System.out.println(". Untrusted IP: " + line.replace(">CLIENT:ENV,untrusted_ip=", ""));
-                    }
-
-                    if (line.contains("SUCCESS: pid=")) {
-                        System.out.println(". PID= " + line.replace("SUCCESS: pid=", ""));
-                    }
-
+                List<String> lines = new ArrayList<>();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println("Received: " + line);
+                    lines.add(line);
                 }
+
+                telnetMessageParsers.forEach(parser -> {
+                            TelnetEvent generatedEvent = parser.parse(lines);
+
+                            if (generatedEvent != null) {
+                                eventManager.fire(generatedEvent);
+                            }
+                        }
+                );
 
             } catch (IOException e) {
                 throw new RuntimeException(e);

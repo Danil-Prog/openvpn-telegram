@@ -1,6 +1,8 @@
 package org.openvpn.telegram.telnet.listeners;
 
-public interface ITelnetEventListener {
+import org.openvpn.telegram.telnet.events.TelnetEvent;
 
-    void publish(String message);
+public interface ITelnetEventListener<T extends TelnetEvent> {
+
+    void onEvent(T event);
 }

@@ -1,10 +1,13 @@
 package org.openvpn.telegram.telnet.listeners;
 
-public class ClientConnectListener implements ITelnetEventListener {
+import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ClientConnectListener implements ITelnetEventListener<ClientConnectedEvent> {
 
     @Override
-    public void publish(String message) {
-        System.out.println("Client connected: " + message);
+    public void onEvent(ClientConnectedEvent event) {
+        System.out.println("Client connected: " + event.username());
     }
-
 }

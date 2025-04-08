@@ -1,48 +1,32 @@
 package org.openvpn.telegram.telnet;
 
+import org.openvpn.telegram.telnet.events.TelnetEvent;
 import org.openvpn.telegram.telnet.listeners.ITelnetEventListener;
-import org.openvpn.telegram.telnet.listeners.TelnetEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@Component
 public class TelnetEventManager {
 
-    private final Map<String, List<ITelnetEventListener>> listeners;
+    private final List<ITelnetEventListener<TelnetEvent>> listeners;
 
     private final Logger logger = LoggerFactory.getLogger(TelnetEventManager.class);
 
-    public TelnetEventManager() {
-        this.listeners = new HashMap<>();
+    @Autowired
+    public TelnetEventManager(List<ITelnetEventListener<TelnetEvent>> listeners) {
+        this.listeners = listeners;
     }
 
-    public void subscribe(TelnetEventType eventType, ITelnetEventListener listener) {
-        logger.trace("Subscribing to Telnet event: {}", eventType);
-        List<ITelnetEventListener> listeners = this.listeners.get(eventType.name());
-
-        if (listeners == null) {
-            listeners = new ArrayList<>();
-        }
-
-        listeners.add(listener);
-    }
-
-    public void unsubscribe(TelnetEventType eventType, ITelnetEventListener listener) {
-        logger.trace("Unsubscribing from Telnet event: {}", eventType);
-        List<ITelnetEventListener> listeners = this.listeners.get(eventType.name());
-        listeners.remove(listener);
-    }
-
-    public void publish(TelnetEventType eventType, String message) {
-        logger.trace("Publishing Telnet event: {}", eventType);
-        List<ITelnetEventListener> listeners = this.listeners.get(eventType.name());
-
-        for (ITelnetEventListener listener : listeners) {
-            listener.publish(message);
+    /**
+     * Receives the generated event, publishes
+     */
+    public void fire(TelnetEvent event) {
+        for (ITelnetEventListener<TelnetEvent> listener : listeners) {
+            listener.onEvent(event);
         }
     }
 }
