@@ -69,7 +69,6 @@ public class TelnetClientDefault implements ITelnetClient {
     @Override
     public Boolean isConnected() {
         boolean connected = telnetClient.isConnected();
-        System.out.println("Connected: " + connected);
 
         if (connected) {
             return true;

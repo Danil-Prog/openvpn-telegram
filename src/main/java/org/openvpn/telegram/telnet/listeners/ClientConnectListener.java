@@ -15,4 +15,5 @@ public class ClientConnectListener implements ITelnetEventListener<ClientConnect
     public void onEvent(ClientConnectedEvent event) {
         System.out.println("Client connected: " + event.username());
     }
+
 }
