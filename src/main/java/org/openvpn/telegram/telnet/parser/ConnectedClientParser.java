@@ -9,19 +9,28 @@ import java.util.List;
 @Component
 public class ConnectedClientParser implements TelnetMessageParser<ClientConnectedEvent> {
 
-    private final String START_WITH_USERNAME = ">CLIENT:ENV,common_name=";
-    private final String START_WITH_IP = ">CLIENT:ENV,untrusted_ip=";
+    private static final String START_WITH_USERNAME = ">CLIENT:ENV,common_name=";
+    private static final String START_WITH_IP = ">CLIENT:ENV,untrusted_ip=";
 
     @Override
     public ClientConnectedEvent parse(List<String> lines) {
-        return lines.stream()
-                .filter(line -> line.contains(START_WITH_USERNAME))
-                .map(line -> {
-                    String username = line.replace(START_WITH_USERNAME, "");
-                    return new ClientConnectedEvent(username, Instant.now());
-                })
-                .findFirst()
-                .orElse(null);
-    }
+        String username = null;
+        String ip = null;
 
+        for (String line : lines) {
+            if (line.startsWith(START_WITH_USERNAME)) {
+                username = line.substring(START_WITH_USERNAME.length());
+            }
+
+            if (line.startsWith(START_WITH_IP)) {
+                ip = line.substring(START_WITH_IP.length());
+            }
+        }
+
+        if (username != null || ip != null) {
+            return new ClientConnectedEvent(username, ip, Instant.now());
+        } else {
+            return null;
+        }
+    }
 }
