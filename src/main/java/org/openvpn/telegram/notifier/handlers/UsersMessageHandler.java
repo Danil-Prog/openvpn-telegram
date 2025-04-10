@@ -1,4 +1,4 @@
-package org.openvpn.telegram.notifier.listener;
+package org.openvpn.telegram.notifier.handlers;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ public class UsersMessageHandler implements IMessageHandler {
     private final TelegramBot bot;
     private final TelegramBotProperties properties;
     private final ICommandSender commandSender;
+
     private final TypeListener typeListener = TypeListener.USERS;
 
     private final Set<String> users = new HashSet<>();
@@ -67,14 +69,13 @@ public class UsersMessageHandler implements IMessageHandler {
         }
         users.add(event.username());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
-        String timeConnectFormat = formatter.format(event.timeConnected());
+        String timeConnectFormat = dateTimeFormatter(event.timeConnected());
 
         String message = String.format("""
                 🌐 VPN user connected
                 IP: %s
                 Username: %s
-                Connected time: %s
+                Connected date: %s
                 
                 Revoke user: /revoke %s""", event.ip(), event.username(), timeConnectFormat, event.username());
 
@@ -95,16 +96,22 @@ public class UsersMessageHandler implements IMessageHandler {
 
         users.remove(event.username());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
-        String timeDisconnectedFormat = formatter.format(event.timeDisconnected());
+        String timeDisconnectedFormat = dateTimeFormatter(event.timeDisconnected());
 
         String message = String.format("""
                 ⚡ VPN user disconnected
                 IP: %s
                 Username: %s
-                Connected time: %s""", event.ip(), event.username(), timeDisconnectedFormat);
+                Disconnected date: %s""", event.ip(), event.username(), timeDisconnectedFormat);
 
         SendMessage sendMessage = new SendMessage(adminChatId, message);
         bot.execute(sendMessage);
+    }
+
+    private String dateTimeFormatter(Instant time) {
+        DateTimeFormatter formatter = DateTimeFormatter
+                .ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.systemDefault());
+        return formatter.format(time);
     }
 }

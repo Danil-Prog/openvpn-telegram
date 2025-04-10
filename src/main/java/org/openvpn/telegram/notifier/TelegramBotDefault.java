@@ -7,8 +7,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import jakarta.annotation.PostConstruct;
 import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
-import org.openvpn.telegram.notifier.listener.IMessageHandler;
-import org.openvpn.telegram.notifier.listener.TypeListener;
+import org.openvpn.telegram.notifier.handlers.IMessageHandler;
+import org.openvpn.telegram.notifier.handlers.TypeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +77,9 @@ public class TelegramBotDefault {
     }
 
     private IMessageHandler getListenerByMessageType(TypeListener typeListener) {
-        return messageHandlers.stream().filter(listener -> listener.getTypeListener() == typeListener).findFirst().orElse(null);
+        return messageHandlers.stream()
+                .filter(listener -> listener.getTypeListener() == typeListener)
+                .findFirst()
+                .orElse(null);
     }
 }

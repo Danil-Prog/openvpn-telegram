@@ -1,4 +1,4 @@
-package org.openvpn.telegram.notifier.listener;
+package org.openvpn.telegram.notifier.handlers;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;

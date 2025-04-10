@@ -3,7 +3,6 @@ package org.openvpn.telegram.telnet;
 import jakarta.annotation.PreDestroy;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.openvpn.telegram.configuration.properties.TelnetConnectionProperties;
-import org.openvpn.telegram.entity.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +17,10 @@ import java.io.OutputStream;
 public class TelnetClientDefault implements ITelnetClient {
 
     private final Long RECONNECT_TIME = 10000L;
-
-    private static final Logger logger = LoggerFactory.getLogger(TelnetClientDefault.class);
-
+    private final TelnetClient telnetClient;
     private final TelnetConnectionProperties telnetConnectionProperties;
 
-    private final TelnetClient telnetClient;
+    private static final Logger logger = LoggerFactory.getLogger(TelnetClientDefault.class);
 
     @Autowired
     public TelnetClientDefault(TelnetConnectionProperties telnetConnectionProperties, TelnetClient telnetClient) {
@@ -62,11 +59,6 @@ public class TelnetClientDefault implements ITelnetClient {
     }
 
     @Override
-    public Connection getConnection() {
-        return null;
-    }
-
-    @Override
     public Boolean isConnected() {
         boolean connected = telnetClient.isConnected();
 
@@ -77,7 +69,6 @@ public class TelnetClientDefault implements ITelnetClient {
 
             while (attempts < 3) {
                 try {
-
                     // Attempt to reinstall connect to server
                     reconnect();
 
@@ -98,7 +89,7 @@ public class TelnetClientDefault implements ITelnetClient {
                 attempts++;
             }
 
-            throw new RuntimeException("Failed to connect to telnet server");
+            throw new RuntimeException("Failed connect to telnet server");
         }
     }
 
@@ -106,7 +97,7 @@ public class TelnetClientDefault implements ITelnetClient {
         try {
             this.telnetClient.connect(telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
         } catch (IOException e) {
-            logger.error("Failed to connect to telnet client, reason: {}", e.getMessage());
+            logger.error("Failed connect to telnet server, reason: {}", e.getMessage());
         }
     }
 }

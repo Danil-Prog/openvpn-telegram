@@ -29,6 +29,7 @@ public class TelnetCommandSender implements ICommandSender {
 
             writer.write(command.getBytes());
             writer.flush();
+
         } catch (Exception e) {
             logger.error("Error sending command, error: {}", e.getMessage());
         }

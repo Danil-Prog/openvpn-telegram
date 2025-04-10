@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 @Component
 public class DisconnectedClientParser implements TelnetMessageParser<ClientDisconnectedEvent> {
 
-    private final String END_WITH_DISCONNECTED = "received, client-instance exiting";
+    private final String DISCONNECTED_PATTERN = "received, client-instance exiting";
 
     @Override
     public ClientDisconnectedEvent parse(List<String> lines) {
@@ -19,7 +19,7 @@ public class DisconnectedClientParser implements TelnetMessageParser<ClientDisco
         String ip = null;
 
         for (String line : lines) {
-            if (!line.contains(END_WITH_DISCONNECTED)) {
+            if (!line.contains(DISCONNECTED_PATTERN)) {
                 continue;
             }
 
