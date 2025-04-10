@@ -40,7 +40,7 @@ public class TelnetCommandRecipient {
         this.commandSender = commandSender;
         this.eventManager = eventManager;
 
-        configureTerminal();
+        new DefaultTelnetTerminalConfiguration().configure();
     }
 
     @PostConstruct
@@ -92,9 +92,19 @@ public class TelnetCommandRecipient {
         }
     }
 
-    private void configureTerminal() {
-        if (telnetClient.isConnected()) {
-            commandSender.send("log on all");
+    private final class DefaultTelnetTerminalConfiguration {
+
+        /**
+         * Logs all events on the telnet server
+         */
+        private static final String LOG_ON_ALL = "log on all";
+
+        private void configure() {
+            if (telnetClient.isConnected()) {
+                logger.info("Configuring Telnet terminal...");
+
+                commandSender.send(LOG_ON_ALL);
+            }
         }
     }
 }
