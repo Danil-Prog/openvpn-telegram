@@ -29,8 +29,8 @@ public class ConnectedClientParser implements TelnetMessageParser<ClientConnecte
 
         if (username != null || ip != null) {
             return new ClientConnectedEvent(username, ip, Instant.now());
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

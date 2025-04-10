@@ -22,6 +22,7 @@ import java.util.List;
 @Component
 public class TelnetCommandRecipient {
 
+    private final TelnetCommandSender commandSender;
     private final TelnetEventManager eventManager;
     private final ITelnetClient telnetClient;
     private final List<TelnetMessageParser<?>> telnetMessageParsers;
@@ -31,11 +32,15 @@ public class TelnetCommandRecipient {
     @Autowired
     public TelnetCommandRecipient(
             @Qualifier("telnetClientDefault") ITelnetClient telnetClient,
+            TelnetCommandSender commandSender,
             TelnetEventManager eventManager,
             List<TelnetMessageParser<?>> telnetMessageParsers) {
-        this.telnetMessageParsers = telnetMessageParsers;
-        this.eventManager = eventManager;
         this.telnetClient = telnetClient;
+        this.telnetMessageParsers = telnetMessageParsers;
+        this.commandSender = commandSender;
+        this.eventManager = eventManager;
+
+        configureTerminal();
     }
 
     @PostConstruct
@@ -75,16 +80,21 @@ public class TelnetCommandRecipient {
                         if (event != null) {
                             eventManager.fire(event);
                             logger.info("Event with type {} generated", event.getClass().getSimpleName());
-
-                            buffer.clear();
-                            break; // We do not pass the buffer to other parsers
                         }
                     }
+
+                    buffer.clear();
                 }
 
             } catch (IOException | InterruptedException e) {
                 logger.error("Error on reading telnet messages, error: {}", e.getMessage());
             }
+        }
+    }
+
+    private void configureTerminal() {
+        if (telnetClient.isConnected()) {
+            commandSender.send("log on all");
         }
     }
 }

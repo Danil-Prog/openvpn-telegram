@@ -6,6 +6,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
 import org.openvpn.telegram.telnet.ICommandSender;
 import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
+import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -56,8 +57,12 @@ public class UsersMessageHandler implements IMessageHandler {
         bot.execute(sendMessage);
     }
 
-    public void onEvent(ClientConnectedEvent event) {
+    public void userConnected(ClientConnectedEvent event) {
         Long adminChatId = properties.getChat();
+
+        if (users.contains(event.username())) {
+            return;
+        }
         users.add(event.username());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
@@ -67,7 +72,29 @@ public class UsersMessageHandler implements IMessageHandler {
                 🌐 VPN user connected
                 IP: %s
                 Username: %s
-                Connected time: %s""", event.username(), event.ip(), timeConnectFormat);
+                Connected time: %s""", event.ip(), event.username(), timeConnectFormat);
+
+        SendMessage sendMessage = new SendMessage(adminChatId, message);
+        bot.execute(sendMessage);
+    }
+
+    public void userDisconnected(ClientDisconnectedEvent event) {
+        Long adminChatId = properties.getChat();
+
+        if (!users.contains(event.username())) {
+            return;
+        }
+
+        users.remove(event.username());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
+        String timeDisconnectedFormat = formatter.format(event.timeDisconnected());
+
+        String message = String.format("""
+                ⚡ VPN user disconnected
+                IP: %s
+                Username: %s
+                Connected time: %s""", event.ip(), event.username(), timeDisconnectedFormat);
 
         SendMessage sendMessage = new SendMessage(adminChatId, message);
         bot.execute(sendMessage);

@@ -24,6 +24,9 @@ public class TelnetCommandSender implements ICommandSender {
     public void send(String command) {
         try {
             OutputStream writer = telnetClient.getStreamWriter();
+
+            command = command + "\n";
+
             writer.write(command.getBytes());
             writer.flush();
         } catch (Exception e) {
