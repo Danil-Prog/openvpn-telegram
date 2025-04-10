@@ -4,13 +4,14 @@
 
 OpenVPN telegram bot notifier.
 
-
 ## Features
 
 - get list users connections
 - kill user connection process (with the possibility of reconnection)
 - received notifier if user connected to VPN server
+
 # Installation and configuration
+
 Configure your OpenVpn server, open the management port:
 
 ```shell
@@ -48,12 +49,12 @@ gradle build
 
 Parameters
 
-| Parameters  | short | Description                                        |
-|:------------|-------|----------------------------------------------------|
-| --ip        | -i    | Set IP for telnet server with OpenVPN management   |
-| --port      | -p    | Set port for telnet server with OpenVPN management |
-| --bot-token | -bt   | Telegram bot token, used for notifier on events    |
-| --chat-id   |       | Chat id telegram account administrator             |
+| Parameters               | Description                                        |
+|:-------------------------|----------------------------------------------------|
+| --telnet.connection.host | Set IP for telnet server with OpenVPN management   |
+| --telnet.connection.port | Set port for telnet server with OpenVPN management |
+| --telegram.bot.token     | Telegram bot token, used for notifier on events    |
+| --telegram.bot.chat      | Chat id telegram account administrator             |
 
 Run app
 
