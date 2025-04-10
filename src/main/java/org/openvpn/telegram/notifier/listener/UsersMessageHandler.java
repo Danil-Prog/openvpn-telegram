@@ -2,6 +2,8 @@ package org.openvpn.telegram.notifier.listener;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
 import org.openvpn.telegram.telnet.ICommandSender;
@@ -72,9 +74,15 @@ public class UsersMessageHandler implements IMessageHandler {
                 🌐 VPN user connected
                 IP: %s
                 Username: %s
-                Connected time: %s""", event.ip(), event.username(), timeConnectFormat);
+                Connected time: %s
+                
+                Revoke user: /revoke %s""", event.ip(), event.username(), timeConnectFormat, event.username());
 
-        SendMessage sendMessage = new SendMessage(adminChatId, message);
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(
+                new InlineKeyboardButton("revoke").callbackData("/revoke " + event.username())
+        );
+
+        SendMessage sendMessage = new SendMessage(adminChatId, message).replyMarkup(inlineKeyboardMarkup);
         bot.execute(sendMessage);
     }
 

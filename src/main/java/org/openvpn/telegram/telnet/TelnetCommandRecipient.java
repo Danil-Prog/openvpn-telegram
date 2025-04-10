@@ -22,7 +22,7 @@ import java.util.List;
 @Component
 public class TelnetCommandRecipient {
 
-    private final TelnetCommandSender commandSender;
+    private final ICommandSender commandSender;
     private final TelnetEventManager eventManager;
     private final ITelnetClient telnetClient;
     private final List<TelnetMessageParser<?>> telnetMessageParsers;
@@ -32,7 +32,7 @@ public class TelnetCommandRecipient {
     @Autowired
     public TelnetCommandRecipient(
             @Qualifier("telnetClientDefault") ITelnetClient telnetClient,
-            TelnetCommandSender commandSender,
+            @Qualifier("telnetCommandSender") ICommandSender commandSender,
             TelnetEventManager eventManager,
             List<TelnetMessageParser<?>> telnetMessageParsers) {
         this.telnetClient = telnetClient;
@@ -92,6 +92,9 @@ public class TelnetCommandRecipient {
         }
     }
 
+    /**
+     * Default preset terminal settings
+     */
     private final class DefaultTelnetTerminalConfiguration {
 
         /**

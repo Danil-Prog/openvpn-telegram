@@ -44,7 +44,7 @@ git clone https://github.com/Danil-Prog/openvpn-telegram.git
 Now build JAR application
 
 ```shell
-gradle build
+./gradlew build
 ```
 
 Parameters
@@ -59,7 +59,13 @@ Parameters
 Run app
 
 ```shell
-gradle bootRun --args='--telnet.connection.host={localhost} --telnet.connection.port={7505} --telegram.bot.token={token} --telegram.bot.chat={chatId}'
+nohup ./gradlew bootRun --args='--telnet.connection.host={localhost} --telnet.connection.port={7505} --telegram.bot.token={token} --telegram.bot.chat={chatId}' > "openvpn-telegram.log" 2>&1 &
+```
+
+Stop app
+
+```shell
+pkill -p 'gradlew bootRun'
 ```
 
 **Software work in mode Daemon, connected to OpenVPN server by telnet.**
