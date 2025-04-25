@@ -89,6 +89,8 @@ public class TelnetClientDefault implements ITelnetClient {
                 attempts++;
             }
 
+            System.exit(1);
+
             throw new RuntimeException("Failed connect to telnet server");
         }
     }

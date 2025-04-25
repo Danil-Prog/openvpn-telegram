@@ -1,0 +1,46 @@
+package org.openvpn.telegram.entity;
+
+import jakarta.persistence.*;
+import org.openvpn.telegram.constants.TableNames;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = TableNames.NOTIFICATION_SETTINGS)
+public class NotificationSettings {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "notifications_enabled")
+    private Boolean enabled;
+
+    @OneToMany
+    private List<Client> disabledClients = new ArrayList<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public List<Client> getDisabledClients() {
+        return disabledClients;
+    }
+
+    public void addDisabledClient(Client client) {
+        this.disabledClients.add(client);
+    }
+}

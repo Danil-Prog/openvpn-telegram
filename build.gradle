@@ -35,6 +35,10 @@ dependencies {
     /* Logger */
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
 
+    /* Database */
+    implementation 'com.h2database:h2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
     /* Testing */
     testImplementation platform("org.junit:junit-bom:5.10.0")
     testImplementation "org.junit.jupiter:junit-jupiter"
