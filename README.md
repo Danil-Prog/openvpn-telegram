@@ -6,9 +6,12 @@ OpenVPN telegram bot notifier.
 
 ## Features
 
-- get list users connections
-- kill user connection process (with the possibility of reconnection)
-- received notifier if user connected to VPN server
+- Block user
+- Unblock user
+- View users connections
+- Receiving notifier if user connected
+- Stop user connection (with the possibility of reconnection)
+- Send custom shell commands for OpenVPN server (Telnet)
 
 # Installation and configuration
 
@@ -59,14 +62,16 @@ Parameters
 Run app
 
 ```shell
+./gradlew bootRun --args='--telnet.connection.host={localhost} --telnet.connection.port={7505} --telegram.bot.token={token} --telegram.bot.chat={chatId}'
+```
+
+Run app without output in terminal
+
+```shell
 nohup ./gradlew bootRun --args='--telnet.connection.host={localhost} --telnet.connection.port={7505} --telegram.bot.token={token} --telegram.bot.chat={chatId}' > "openvpn-telegram.log" 2>&1 &
 ```
 
-Stop app
-
-```shell
-pkill -p 'gradlew bootRun'
-```
+Logfile > `openvpn-telegram.log`
 
 **Software work in mode Daemon, connected to OpenVPN server by telnet.**
 
