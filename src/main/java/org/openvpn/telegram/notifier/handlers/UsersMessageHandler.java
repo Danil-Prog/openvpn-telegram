@@ -21,11 +21,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-public class UsersMessageHandler implements IMessageHandler {
+public final class UsersMessageHandler implements IMessageHandler {
 
     private final TelegramBot bot;
     private final TelegramBotProperties properties;
-    private final ICommandSender commandSender;
 
     private final TypeListener typeListener = TypeListener.USERS;
 
@@ -34,14 +33,13 @@ public class UsersMessageHandler implements IMessageHandler {
     private final Logger logger = LoggerFactory.getLogger(UsersMessageHandler.class);
 
     public UsersMessageHandler(TelegramBot bot, TelegramBotProperties properties, ICommandSender commandSender) {
-        this.commandSender = commandSender;
         this.properties = properties;
         this.bot = bot;
     }
 
     @Override
     public TypeListener getTypeListener() {
-        return typeListener;
+        return this.typeListener;
     }
 
     @Override

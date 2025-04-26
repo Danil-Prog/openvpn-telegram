@@ -29,12 +29,12 @@ public class NotificationSettingsService {
     /**
      * Disabled TG notification
      */
-    public void updateNotificationState(boolean enabled) {
+    public void updateNotificationState(boolean state) {
         notificationSettingsRepository
                 .findById(DEFAULT_NOTIFICATION_SETTINGS_PRESET)
                 .ifPresent(settings -> {
-                    settings.setEnabled(enabled);
-                    logger.info("Default setting notification state changed to [{}]", enabled);
+                    settings.setEnabled(state);
+                    logger.info("Default setting notification state changed to [{}]", state);
 
                     notificationSettingsRepository.save(settings);
                 });

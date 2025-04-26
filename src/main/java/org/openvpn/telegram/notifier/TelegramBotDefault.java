@@ -67,6 +67,12 @@ public class TelegramBotDefault {
                             case "/users":
                                 getListenerByMessageType(TypeListener.USERS).handle(update);
                                 break;
+                            case "/enabled_notifications":
+                                getListenerByMessageType(TypeListener.ENABLED_NOTIFICATION).handle(update);
+                                break;
+                            case "/disabled_notifications":
+                                getListenerByMessageType(TypeListener.DISABLED_NOTIFICATION).handle(update);
+                                break;
                         }
 
                     }
