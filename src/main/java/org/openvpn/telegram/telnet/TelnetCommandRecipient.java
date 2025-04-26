@@ -69,7 +69,7 @@ public class TelnetCommandRecipient {
                         }
                     } else {
                         // Expected to save CPU time
-                        Thread.sleep(100);
+                        Thread.sleep(50);
                     }
                 }
 

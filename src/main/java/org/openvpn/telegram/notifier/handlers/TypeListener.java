@@ -1,13 +1,10 @@
 package org.openvpn.telegram.notifier.handlers;
 
 public enum TypeListener {
-    START("/start"),
-    USERS("/users"),
-    ENABLED_NOTIFICATION("/enabled_notifications"),
-    DISABLED_NOTIFICATION("/disabled_notifications"),
+    START,
+    USERS,
+    ENABLED_NOTIFICATION,
+    DISABLED_NOTIFICATION,
     ;
-
-    TypeListener(String command) {
-    }
 
 }
