@@ -16,10 +16,10 @@ import java.io.OutputStream;
 @Component
 public class TelnetClientDefault implements ITelnetClient {
 
-    private final Long RECONNECT_TIME = 10000L;
     private final TelnetClient telnetClient;
     private final TelnetConnectionProperties telnetConnectionProperties;
 
+    private static final Long RECONNECT_TIME = 10000L;
     private static final Logger logger = LoggerFactory.getLogger(TelnetClientDefault.class);
 
     @Autowired

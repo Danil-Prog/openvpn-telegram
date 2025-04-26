@@ -5,6 +5,4 @@ public enum TypeListener {
     USERS,
     ENABLED_NOTIFICATION,
     DISABLED_NOTIFICATION,
-    ;
-
 }
