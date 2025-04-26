@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 @Service
 public class NotificationSettingsService {
 
@@ -39,8 +41,11 @@ public class NotificationSettingsService {
     }
 
     public boolean isNotificationSettingsEnabled() {
-        return notificationSettingsRepository
+        NotificationSettings settings = notificationSettingsRepository
                 .findById(DEFAULT_NOTIFICATION_SETTINGS_PRESET)
-                .ifPresent(NotificationSettings::getEnabled);
+                .orElseThrow(() -> new NoSuchElementException("Notification settings not found"));
+
+        return settings.getEnabled();
     }
+
 }
