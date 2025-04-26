@@ -18,6 +18,7 @@ public class NotificationSettings {
     private Boolean enabled;
 
     @OneToMany
+    @JoinColumn(name = "settings_id")
     private List<Client> disabledClients = new ArrayList<>();
 
     public Long getId() {

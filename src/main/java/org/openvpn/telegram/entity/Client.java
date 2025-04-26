@@ -20,7 +20,7 @@ public class Client {
     @Column(name = "is_enabled")
     private Boolean enabled;
 
-    @Column(name = "last_ip_connected")
+    @Column(name = "last_ip_login")
     private String ip;
 
     public void setId(Long id) {
