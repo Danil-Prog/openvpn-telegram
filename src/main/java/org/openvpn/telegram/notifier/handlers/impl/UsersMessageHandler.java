@@ -49,11 +49,11 @@ public final class UsersMessageHandler implements IMessageHandler {
         Long adminChatId = properties.getChat();
 
         if (users.isEmpty()) {
-            SendMessage sendMessage = new SendMessage(adminChatId, "No users found");
+            SendMessage sendMessage = new SendMessage(adminChatId, "📋 No users found");
             bot.execute(sendMessage);
             return;
         }
-        String usersFormatted = users.stream().map(it -> it + "\n").collect(Collectors.joining());
+        String usersFormatted = users.stream().map(it -> " * " + it + "\n").collect(Collectors.joining());
 
         String message = "📋 All connections to VPN server:\n" + usersFormatted;
 
