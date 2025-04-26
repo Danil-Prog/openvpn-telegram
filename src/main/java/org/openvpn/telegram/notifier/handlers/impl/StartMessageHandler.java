@@ -1,9 +1,11 @@
-package org.openvpn.telegram.notifier.handlers;
+package org.openvpn.telegram.notifier.handlers.impl;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
+import org.openvpn.telegram.notifier.handlers.IMessageHandler;
+import org.openvpn.telegram.notifier.handlers.TypeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

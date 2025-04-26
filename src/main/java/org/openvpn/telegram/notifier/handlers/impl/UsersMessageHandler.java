@@ -1,4 +1,4 @@
-package org.openvpn.telegram.notifier.handlers;
+package org.openvpn.telegram.notifier.handlers.impl;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
@@ -6,6 +6,8 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
+import org.openvpn.telegram.notifier.handlers.IMessageHandler;
+import org.openvpn.telegram.notifier.handlers.TypeListener;
 import org.openvpn.telegram.telnet.ICommandSender;
 import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
 import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;

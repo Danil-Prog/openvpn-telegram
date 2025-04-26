@@ -1,6 +1,7 @@
 package org.openvpn.telegram.telnet.listeners;
 
-import org.openvpn.telegram.notifier.handlers.UsersMessageHandler;
+import org.openvpn.telegram.notifier.handlers.impl.UsersMessageHandler;
+import org.openvpn.telegram.service.NotificationSettingsService;
 import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +12,17 @@ import org.springframework.stereotype.Component;
 public class ClientDisconnectListener implements ITelnetEventListener<ClientDisconnectedEvent> {
 
     private final UsersMessageHandler usersMessageHandler;
+    private final NotificationSettingsService notificationSettingsService;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public ClientDisconnectListener(UsersMessageHandler usersMessageHandler) {
+    public ClientDisconnectListener(
+            UsersMessageHandler usersMessageHandler,
+            NotificationSettingsService notificationSettingsService
+    ) {
         this.usersMessageHandler = usersMessageHandler;
+        this.notificationSettingsService = notificationSettingsService;
     }
 
     @Override
@@ -26,7 +33,10 @@ public class ClientDisconnectListener implements ITelnetEventListener<ClientDisc
     @Override
     public void onEvent(ClientDisconnectedEvent event) {
         logger.info("Client disconnected: username[{}], ip[{}]", event.username(), event.ip());
-        usersMessageHandler.userDisconnected(event);
+
+        if (notificationSettingsService.isNotificationSettingsEnabled()) {
+            usersMessageHandler.userDisconnected(event);
+        }
     }
 
 }
