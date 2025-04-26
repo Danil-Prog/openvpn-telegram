@@ -11,6 +11,7 @@ OpenVPN telegram bot notifier.
 - View users connections
 - Receiving notifier if user connected
 - Stop user connection (with the possibility of reconnection)
+- User traffic statistics(s)
 - Send custom shell commands for OpenVPN server (Telnet)
 
 # Installation and configuration
