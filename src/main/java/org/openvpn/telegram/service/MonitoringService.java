@@ -25,7 +25,7 @@ public class MonitoringService {
     public void updateUserInformation(ClientConnectedEvent event) {
         Optional<Client> optionalClient = clientRepository.findByUsername(event.username());
 
-        optionalClient.ifPresent(client1 -> {
+        optionalClient.ifPresent(client -> {
             logger.info("Updating user information for username[{}]", event.username());
 
 

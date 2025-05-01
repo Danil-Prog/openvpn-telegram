@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class TelegramBotDefault {
+public class TelegramBotManager {
 
     private final TelegramBot bot;
     private final TelegramBotProperties properties;
@@ -25,10 +25,10 @@ public class TelegramBotDefault {
 
     private final String ACCESS_DENIED_MESSAGE = "❗ Access denied. You are not the administrator of this bot.";
 
-    private final Logger logger = LoggerFactory.getLogger(TelegramBotDefault.class);
+    private final Logger logger = LoggerFactory.getLogger(TelegramBotManager.class);
 
     @Autowired
-    public TelegramBotDefault(TelegramBot bot,
+    public TelegramBotManager(TelegramBot bot,
                               TelegramBotProperties properties,
                               List<IMessageHandler> messageHandlers) {
         this.messageHandlers = messageHandlers;
@@ -46,40 +46,40 @@ public class TelegramBotDefault {
 
     private void telegramBotStart() {
         logger.info("Initializing Telegram Bot...");
+        bot.setUpdatesListener(this::handle);
+    }
+
+    private int handle(List<Update> updates) {
         Long administrator = properties.getChat();
 
-        bot.setUpdatesListener(updates -> {
+        updates.forEach(update -> {
+            Message message = update.message();
+            Long from = message.chat().id();
 
-                    for (Update update : updates) {
-                        Message message = update.message();
-                        Long from = message.chat().id();
+            // Ignoring non-administrator messages
+            if (!from.equals(administrator)) {
+                bot.execute(new SendMessage(administrator, ACCESS_DENIED_MESSAGE));
+                return;
+            }
 
-                        // Ignoring non-administrator messages
-                        if (!from.equals(administrator)) {
-                            bot.execute(new SendMessage(administrator, ACCESS_DENIED_MESSAGE));
-                            continue;
-                        }
+            switch (message.text()) {
+                case "/start":
+                    getListenerByMessageType(TypeListener.START).handle(update);
+                    break;
+                case "/users":
+                    getListenerByMessageType(TypeListener.USERS).handle(update);
+                    break;
+                case "/enabled_notifications":
+                    getListenerByMessageType(TypeListener.ENABLED_NOTIFICATION).handle(update);
+                    break;
+                case "/disabled_notifications":
+                    getListenerByMessageType(TypeListener.DISABLED_NOTIFICATION).handle(update);
+                    break;
+            }
 
-                        switch (message.text()) {
-                            case "/start":
-                                getListenerByMessageType(TypeListener.START).handle(update);
-                                break;
-                            case "/users":
-                                getListenerByMessageType(TypeListener.USERS).handle(update);
-                                break;
-                            case "/enabled_notifications":
-                                getListenerByMessageType(TypeListener.ENABLED_NOTIFICATION).handle(update);
-                                break;
-                            case "/disabled_notifications":
-                                getListenerByMessageType(TypeListener.DISABLED_NOTIFICATION).handle(update);
-                                break;
-                        }
+        });
 
-                    }
-
-                    return UpdatesListener.CONFIRMED_UPDATES_ALL;
-                }
-        );
+        return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
     private IMessageHandler getListenerByMessageType(TypeListener typeListener) {

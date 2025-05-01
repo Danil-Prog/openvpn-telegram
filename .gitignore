@@ -1,3 +1,5 @@
 build
 .idea/
 .gradle
+/data/openvpn-telegram-db.mv.db
+/data/openvpn-telegram-db.trace.db

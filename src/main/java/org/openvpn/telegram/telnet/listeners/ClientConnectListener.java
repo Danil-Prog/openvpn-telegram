@@ -1,6 +1,6 @@
 package org.openvpn.telegram.telnet.listeners;
 
-import org.openvpn.telegram.notifier.handlers.impl.UsersMessageHandler;
+import org.openvpn.telegram.notifier.service.UserEventService;
 import org.openvpn.telegram.service.NotificationSettingsService;
 import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
 import org.slf4j.Logger;
@@ -11,17 +11,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClientConnectListener implements ITelnetEventListener<ClientConnectedEvent> {
 
-    private final UsersMessageHandler usersMessageHandler;
+    private final UserEventService userEventService;
     private final NotificationSettingsService notificationSettingsService;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public ClientConnectListener(
-            UsersMessageHandler usersMessageHandler,
+            UserEventService userEventService,
             NotificationSettingsService notificationSettingsService
     ) {
-        this.usersMessageHandler = usersMessageHandler;
+        this.userEventService = userEventService;
         this.notificationSettingsService = notificationSettingsService;
     }
 
@@ -35,7 +35,7 @@ public class ClientConnectListener implements ITelnetEventListener<ClientConnect
         logger.info("Client connected: username[{}], ip[{}]", event.username(), event.ip());
 
         if (notificationSettingsService.isNotificationSettingsEnabled()) {
-            usersMessageHandler.userConnected(event);
+            userEventService.userConnected(event);
         }
     }
 
