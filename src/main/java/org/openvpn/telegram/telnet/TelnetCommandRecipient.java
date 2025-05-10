@@ -98,15 +98,14 @@ public class TelnetCommandRecipient {
     private final class DefaultTelnetTerminalConfiguration {
 
         /**
-         * Logs all events on the telnet server
+         * Enable real-time output of log messages
          */
-        private static final String LOG_ON_ALL = "log on all";
+        private static final String LOG_ON = "log on";
 
         private void configure() {
             if (telnetClient.isConnected()) {
                 logger.info("Configuring Telnet terminal...");
-
-                commandSender.send(LOG_ON_ALL);
+                commandSender.send(LOG_ON);
             }
         }
     }
