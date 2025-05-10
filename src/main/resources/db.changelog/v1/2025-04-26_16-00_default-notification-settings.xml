@@ -5,28 +5,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-
-    <changeSet id="2" author="master">
-
-        <createTable tableName="openvpn_telegram_notification_settings">
-
-            <column name="id" type="BIGSERIAL">
-                <constraints primaryKey="true"/>
-            </column>
-
-            <column name="notifications_enabled" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-
-        </createTable>
-
-        <addForeignKeyConstraint
-                constraintName="openvpn_telegram_client_notification_settings_fk"
-                baseTableName="openvpn_telegram_client"
-                baseColumnNames="settings_id"
-                referencedTableName="openvpn_telegram_notification_settings"
-                referencedColumnNames="id"
-                onDelete="CASCADE"/>
+    <changeSet id="3" author="master">
 
         <insert tableName="openvpn_telegram_notification_settings">
             <column name="id" value="1"/>
