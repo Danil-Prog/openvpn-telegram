@@ -48,19 +48,29 @@ git clone https://github.com/Danil-Prog/openvpn-telegram.git
 Now build JAR application
 
 ```shell
-./gradlew build
+cp .env.example .env
 ```
 
-Parameters
+Available parameters
 
-| Parameters               | Description                                        |
-|:-------------------------|----------------------------------------------------|
-| --telnet.connection.host | Set IP for telnet server with OpenVPN management   |
-| --telnet.connection.port | Set port for telnet server with OpenVPN management |
-| --telegram.bot.token     | Telegram bot token, used for notifier on events    |
-| --telegram.bot.chat      | Chat id telegram account administrator             |
+| Parameters             | Description                                        |
+|:-----------------------|----------------------------------------------------|
+| telnet.connection.host | Set IP for telnet server with OpenVPN management   |
+| telnet.connection.port | Set port for telnet server with OpenVPN management |
+| telegram.bot.token     | Telegram bot token, used for notifier on events    |
+| telegram.bot.chat      | Chat id telegram account administrator             |
+
+Edit the .env file:
+
+```shell
+nano .env
+```
 
 Run app
+
+```shell
+./openvpn-monitor.sh --start
+```
 
 ```shell
 ./gradlew bootRun --args='--telnet.connection.host={localhost} --telnet.connection.port={7505} --telegram.bot.token={token} --telegram.bot.chat={chatId}'
