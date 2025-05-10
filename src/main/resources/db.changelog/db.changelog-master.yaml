@@ -1,7 +1,11 @@
 databaseChangeLog:
   - include:
-      file: db.changelog/v1/2025-04-26_15-00_create-table-client.xml
+      file: db.changelog/v1/2025-04-26_15-00_create-table-clients.xml
   - include:
       file: db.changelog/v1/2025-04-26_15-30_create-table-notification-settings.xml
+  - include:
+      file: db.changelog/v1/2025-04-26_15-40_create-table-sessions.xml
+  - include:
+      file: db.changelog/v1/2025-04-26_15-50_create-table-clients-sessions.xml
   - include:
       file: db.changelog/v1/2025-04-26_16-00_default-notification-settings.xml

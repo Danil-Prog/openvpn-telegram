@@ -7,7 +7,7 @@
 
     <changeSet id="1" author="master">
 
-        <createTable tableName="openvpn_telegram_client">
+        <createTable tableName="openvpn_telegram_clients">
 
             <column name="id" type="BIGSERIAL">
                 <constraints primaryKey="true"/>

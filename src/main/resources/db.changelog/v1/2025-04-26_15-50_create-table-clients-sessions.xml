@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="3" author="master">
+
+        <createTable tableName="openvpn_telegram_clients_sessions">
+
+            <column name="client_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="session_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="openvpn_telegram_clients_sessions"
+                                 baseColumnNames="client_id"
+                                 constraintName="openvpn_telegram_clients_sessions_clients_fk"
+                                 referencedTableName="openvpn_telegram_clients"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="openvpn_telegram_clients_sessions"
+                                 baseColumnNames="session_id"
+                                 constraintName="openvpn_telegram_clients_sessions_sessions_fk"
+                                 referencedTableName="openvpn_telegram_sessions"
+                                 referencedColumnNames="id"/>
+
+    </changeSet>
+
+</databaseChangeLog>

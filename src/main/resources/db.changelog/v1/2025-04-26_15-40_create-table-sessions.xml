@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="3" author="master">
+
+        <createTable tableName="openvpn_telegram_sessions">
+
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="time_connected" type="TIMESTAMP"/>
+
+            <column name="bytes_received" type="BIGINT"/>
+
+            <column name="bytes_sent" type="BIGINT"/>
+
+            <column name="time_disconnected" type="TIMESTAMP"/>
+
+            <column name="duration" type="TIMESTAMP"/>
+
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

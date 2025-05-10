@@ -21,7 +21,7 @@
 
         <addForeignKeyConstraint
                 constraintName="openvpn_telegram_client_notification_settings_fk"
-                baseTableName="openvpn_telegram_client"
+                baseTableName="openvpn_telegram_clients"
                 baseColumnNames="settings_id"
                 referencedTableName="openvpn_telegram_notification_settings"
                 referencedColumnNames="id"

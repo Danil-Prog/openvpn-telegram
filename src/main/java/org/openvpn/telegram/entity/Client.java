@@ -3,8 +3,10 @@ package org.openvpn.telegram.entity;
 import jakarta.persistence.*;
 import org.openvpn.telegram.constants.TableNames;
 
+import java.util.List;
+
 @Entity
-@Table(name = TableNames.CLIENT)
+@Table(name = TableNames.CLIENTS)
 public class Client {
 
     @Id
@@ -22,6 +24,14 @@ public class Client {
 
     @Column(name = "last_ip_login")
     private String ip;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = TableNames.CLIENTS_SESSIONS,
+            joinColumns = @JoinColumn(name = "client_id"),
+            inverseJoinColumns = @JoinColumn(name = "session_id")
+    )
+    private List<Session> sessions;
 
     public void setId(Long id) {
         this.id = id;
