@@ -5,7 +5,7 @@ g='\033[0;32m' # green
 y='\033[0;33m' # yellow
 nc='\033[0m'   # No Color
 
-help="Available parameters:
+HELP="Available parameters:
 
   --help(-h)        :get list commands.
   --start(-s)       :start program local
@@ -14,25 +14,26 @@ help="Available parameters:
   --upgrade         :upgrade application
 "
 
-arg=$1
-env_path='.env'
+ARG=$1
+LOG_FILE_PATH='openvpn-telegram.log'
+ENV_PATH='.env'
 
 #-------Logger
 
 function log() {
-  dateFormat  ${nc} "[LOG]: ${1}${nc}"
+  dateFormat  "${nc}" "[LOG]: ${1}${nc}"
 }
 
 function info() {
-  dateFormat  ${g} "[INFO]: ${1}${nc}"
+  dateFormat  "${g}" "[INFO]: ${1}${nc}"
 }
 
 function warning() {
-  dateFormat ${y} "[WARNING]: ${1}${nc}"
+  dateFormat "${y}" "[WARNING]: ${1}${nc}"
 }
 
 function error() {
-  dateFormat ${r} "[ERROR]: ${1}${nc}"
+  dateFormat "${r}" "[ERROR]: ${1}${nc}"
 }
 
 function dateFormat() {
@@ -46,7 +47,16 @@ function emptyLine() {
 #-------
 
 function start() {
+  load_env
   build
+
+  nohup ./gradlew bootRun --args="\
+  --telnet.connection.host=${TELNET_CONNECTION_HOST} \
+  --telnet.connection.port=${TELNET_CONNECTION_PORT} \
+  --telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
+  --telegram.bot.chat=${TELEGRAM_BOT_CHAT}" > ${LOG_FILE_PATH} 2>&1 &
+
+  info "Application launched successfully!"
 }
 
 function build() {
@@ -56,6 +66,15 @@ function build() {
 
 function stop() {
   info "Stop program..."
+  PID=$(pgrep -f "org.gradle.wrapper.GradleWrapperMain bootRun --args")
+
+  if [ -n "$PID" ]; then
+    warning "Stop process by PID=$PID..."
+    kill "$PID"
+    info "Successfully stopped program."
+  else
+    e "❗ Process not found"
+  fi
 }
 
 function check_upgrade() {
@@ -66,19 +85,44 @@ function upgrade() {
   info "Upgrade application..."
 }
 
-function if_env_not_exist() {
-    if [ ! -f "${env_path}" ]; then
-        error "File '.env' not found by path: ${env_path}" >&2
-        exit 1
+function load_env() {
+    if [ -f "${ENV_PATH}" ]; then
+      info "Starting the process of initializing environment variables"
+      set -a
+      source "$ENV_PATH"
+      set +a
+    else
+      error "Env file '${ENV_PATH}' not found."
+      exit 1
     fi
 }
 
-if_env_not_exist
+# Automatically detects JAVA_HOME if it is not set
+if [ -z "$JAVA_HOME" ]; then
+  JAVA_PATH=$(readlink -f "$(which java)")
 
-case $arg in
+  if [ -z "$JAVA_PATH" ]; then
+    error "Java not installed. Install and try again later."
+    exit 1
+  fi
+
+  JAVA_HOME=$(dirname "$(dirname "$JAVA_PATH")")
+  export JAVA_HOME
+  export PATH="$JAVA_HOME/bin:$PATH"
+
+  info "JAVA_HOME installed in: $JAVA_HOME"
+fi
+
+# Check
+java -version || {
+  error "Error: Java is not available. Check environment variable."
+  exit 1
+}
+
+case $ARG in
 
   '--help' | '-h')
-    info "$help"
+    info "$HELP"
   ;;
 
   '--start' | '-s')
@@ -98,7 +142,7 @@ case $arg in
   ;;
 
   *)
-    error "unknown argument: $arg"
+    error "unknown argument: $ARG"
     emptyLine
-    warning "$help"
+    warning "$HELP"
 esac

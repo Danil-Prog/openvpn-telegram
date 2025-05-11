@@ -59,7 +59,7 @@ Available parameters
 | telnet.connection.port | Set port for telnet server with OpenVPN management |
 | telegram.bot.token     | Telegram bot token, used for notifier on events    |
 | telegram.bot.chat      | Chat id telegram account administrator             |
-
+~~~~
 Edit the .env file:
 
 ```shell
@@ -72,17 +72,13 @@ Run app
 ./openvpn-monitor.sh --start
 ```
 
-```shell
-./gradlew bootRun --args='--telnet.connection.host={localhost} --telnet.connection.port={7505} --telegram.bot.token={token} --telegram.bot.chat={chatId}'
-```
-
-Run app without output in terminal
+If you needed stop program, use:
 
 ```shell
-nohup ./gradlew bootRun --args='--telnet.connection.host={localhost} --telnet.connection.port={7505} --telegram.bot.token={token} --telegram.bot.chat={chatId}' > "openvpn-telegram.log" 2>&1 &
+./openvpn-monitor.sh --stop
 ```
 
-Logfile > `openvpn-telegram.log`
+All output of the program is saved in the file "openvpn-telegram.log"
 
 **Software work in mode Daemon, connected to OpenVPN server by telnet.**
 
