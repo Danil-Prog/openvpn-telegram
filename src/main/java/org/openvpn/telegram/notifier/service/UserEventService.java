@@ -44,12 +44,19 @@ public class UserEventService {
         String timeConnectFormat = dateTimeFormatter(event.timeConnected());
 
         String message = String.format("""
-                🌐 VPN user connected
-                IP: %s
-                Username: %s
-                Connected date: %s
-                
-                Revoke user: /revoke %s""", event.ip(), event.username(), timeConnectFormat, event.username());
+                        🌐 VPN user connected
+                        IP: %s
+                        Username: %s
+                        Platform: %s
+                        Connected date: %s
+                        
+                        Revoke user: /revoke %s""",
+                event.ip(),
+                event.username(),
+                event.platform(),
+                timeConnectFormat,
+                event.username()
+        );
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(
                 new InlineKeyboardButton("revoke").callbackData("/revoke " + event.username())
