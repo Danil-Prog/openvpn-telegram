@@ -59,7 +59,7 @@ Available parameters
 | telnet.connection.port | Set port for telnet server with OpenVPN management |
 | telegram.bot.token     | Telegram bot token, used for notifier on events    |
 | telegram.bot.chat      | Chat id telegram account administrator             |
-~~~~
+
 Edit the .env file:
 
 ```shell
