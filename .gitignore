@@ -4,3 +4,4 @@ build
 /data/openvpn-telegram-db.mv.db
 /data/openvpn-telegram-db.trace.db
 /.env
+/openvpn-telegram.log
