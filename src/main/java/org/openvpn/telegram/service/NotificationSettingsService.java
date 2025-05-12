@@ -12,6 +12,12 @@ import java.util.NoSuchElementException;
 @Service
 public class NotificationSettingsService {
 
+
+    /**
+     * Local cache
+     */
+    private Boolean isNotificationSettingsEnabled;
+
     /**
      * Notification settings exist in a single instance
      */
@@ -37,10 +43,15 @@ public class NotificationSettingsService {
                     logger.info("Default setting notification state changed to [{}]", state);
 
                     notificationSettingsRepository.save(settings);
+                    isNotificationSettingsEnabled = state;
                 });
     }
 
     public boolean isNotificationSettingsEnabled() {
+        if (isNotificationSettingsEnabled != null) {
+            return isNotificationSettingsEnabled;
+        }
+
         NotificationSettings settings = notificationSettingsRepository
                 .findById(DEFAULT_NOTIFICATION_SETTINGS_PRESET)
                 .orElseThrow(() -> new NoSuchElementException("Notification settings not found"));
