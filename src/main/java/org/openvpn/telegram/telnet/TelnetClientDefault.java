@@ -23,7 +23,10 @@ public class TelnetClientDefault implements ITelnetClient {
     private static final Logger logger = LoggerFactory.getLogger(TelnetClientDefault.class);
 
     @Autowired
-    public TelnetClientDefault(TelnetConnectionProperties telnetConnectionProperties, TelnetClient telnetClient) {
+    public TelnetClientDefault(
+            TelnetConnectionProperties telnetConnectionProperties,
+            TelnetClient telnetClient
+    ) {
         this.telnetConnectionProperties = telnetConnectionProperties;
         this.telnetClient = telnetClient;
         connect();
@@ -33,13 +36,18 @@ public class TelnetClientDefault implements ITelnetClient {
     public void connect() {
         telnetClient.setConnectTimeout(3000);
         this.reconnect();
-        logger.info("Successful connected to {}:{}", telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
+
+        logger.info(
+                "Successful connected to {}:{}",
+                telnetConnectionProperties.getHost(),
+                telnetConnectionProperties.getPort()
+        );
     }
 
     @PreDestroy
     @Override
     public void disconnect() {
-        logger.info("Trying disconnecting telnet server..");
+        logger.info("Disconnect from telnet server..");
         try {
             telnetClient.disconnect();
         } catch (IOException e) {
