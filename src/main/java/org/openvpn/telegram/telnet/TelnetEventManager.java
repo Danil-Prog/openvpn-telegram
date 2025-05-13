@@ -1,5 +1,6 @@
 package org.openvpn.telegram.telnet;
 
+import jakarta.annotation.PostConstruct;
 import org.openvpn.telegram.telnet.events.TelnetEvent;
 import org.openvpn.telegram.telnet.listeners.ITelnetEventListener;
 import org.slf4j.Logger;
@@ -8,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 public class TelnetEventManager {
 
     private final List<ITelnetEventListener<?>> listeners;
+    private final BlockingQueue<TelnetEvent> events = new LinkedBlockingQueue<>();
 
     private final Logger logger = LoggerFactory.getLogger(TelnetEventManager.class);
 
@@ -21,13 +25,32 @@ public class TelnetEventManager {
         this.listeners = listeners;
     }
 
+    @PostConstruct
+    public void init() {
+        new Thread(this::handle).start();
+    }
+
     /**
-     * Receives the generated event, publishes
+     * Publishes events to a blocking queue
      */
-    public void fire(TelnetEvent event) {
-        for (ITelnetEventListener<?> listener : listeners) {
-            if (listener.getSupportedEventType().isInstance(event)) {
-                invokeListener(listener, event);
+    public void publish(TelnetEvent event) {
+        events.add(event);
+    }
+
+    /**
+     * Handle generated event
+     */
+    private void handle() {
+        while (true) {
+            try {
+                TelnetEvent event = events.take();
+                for (ITelnetEventListener<?> listener : listeners) {
+                    if (listener.getSupportedEventType().isInstance(event)) {
+                        invokeListener(listener, event);
+                    }
+                }
+            } catch (InterruptedException e) {
+                logger.error("Interrupted while processing event, error: {}", e.getMessage());
             }
         }
     }

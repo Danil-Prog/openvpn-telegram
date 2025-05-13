@@ -26,13 +26,16 @@ public class TelnetCommandRecipient {
     private final TelnetEventManager eventManager;
     private final ITelnetClient telnetClient;
     private final List<TelnetMessageParser<?>> telnetMessageParsers;
+    private final List<String> buffer = new ArrayList<>();
 
     private static final Logger logger = LoggerFactory.getLogger(TelnetCommandRecipient.class);
 
     @Autowired
     public TelnetCommandRecipient(
-            @Qualifier("telnetClientDefault") ITelnetClient telnetClient,
-            @Qualifier("telnetCommandSender") ICommandSender commandSender,
+            @Qualifier("telnetClientDefault")
+            ITelnetClient telnetClient,
+            @Qualifier("telnetCommandSender")
+            ICommandSender commandSender,
             TelnetEventManager eventManager,
             List<TelnetMessageParser<?>> telnetMessageParsers) {
         this.telnetClient = telnetClient;
@@ -45,50 +48,51 @@ public class TelnetCommandRecipient {
 
     @PostConstruct
     public void init() {
-        new Thread(this::listenToTelnet).start();
+        new Thread(this::handle).start();
     }
 
-    private void listenToTelnet() {
-        logger.info("Start listen to telnet messages...");
-
-        List<String> buffer = new ArrayList<>();
+    private void handle() {
+        logger.info("Telnet message processing started");
 
         while (telnetClient.isConnected()) {
             try {
-                BufferedReader reader = telnetClient.getStreamReader();
-                buffer.clear();
-
-                Instant start = Instant.now();
-                Duration timeout = Duration.ofSeconds(1);
-
-                while (Duration.between(start, Instant.now()).compareTo(timeout) < 0) {
-                    if (reader.ready()) {
-                        String line = reader.readLine();
-                        if (line != null) {
-                            buffer.add(line);
-                        }
-                    } else {
-                        // Expected to save CPU time
-                        Thread.sleep(50);
-                    }
-                }
-
-                if (!buffer.isEmpty()) {
-                    for (TelnetMessageParser<?> parser : telnetMessageParsers) {
-                        TelnetEvent event = parser.parse(buffer);
-
-                        if (event != null) {
-                            eventManager.fire(event);
-                            logger.info("Event with type {} generated", event.getClass().getSimpleName());
-                        }
-                    }
-
-                    buffer.clear();
-                }
-
+                this.process();
             } catch (IOException | InterruptedException e) {
                 logger.error("Error on reading telnet messages, error: {}", e.getMessage());
             }
+        }
+    }
+
+    private void process() throws IOException, InterruptedException {
+        BufferedReader reader = telnetClient.getStreamReader();
+        buffer.clear();
+
+        Instant start = Instant.now();
+        Duration timeout = Duration.ofSeconds(1);
+
+        while (Duration.between(start, Instant.now()).compareTo(timeout) < 0) {
+            if (reader.ready()) {
+                String line = reader.readLine();
+                if (line != null) {
+                    buffer.add(line);
+                }
+            } else {
+                // Expected to save CPU time
+                Thread.sleep(50);
+            }
+        }
+
+        if (!buffer.isEmpty()) {
+            for (TelnetMessageParser<?> parser : telnetMessageParsers) {
+                TelnetEvent event = parser.parse(buffer);
+
+                if (event != null) {
+                    eventManager.publish(event);
+                    logger.info("Event with type {} generated", event.getClass().getSimpleName());
+                }
+            }
+
+            buffer.clear();
         }
     }
 
