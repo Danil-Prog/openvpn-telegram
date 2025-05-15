@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
 import org.openvpn.telegram.notifier.handlers.IMessageHandler;
 import org.openvpn.telegram.notifier.handlers.TypeListener;
-import org.openvpn.telegram.notifier.service.UserEventService;
+import org.openvpn.telegram.notifier.service.ClientEventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public final class UsersMessageHandler implements IMessageHandler {
 
     private final TelegramBot bot;
     private final TelegramBotProperties properties;
-    private final UserEventService userEventService;
+    private final ClientEventService clientEventService;
 
     private final TypeListener typeListener = TypeListener.USERS;
 
@@ -27,11 +27,11 @@ public final class UsersMessageHandler implements IMessageHandler {
     public UsersMessageHandler(
             TelegramBot bot,
             TelegramBotProperties properties,
-            UserEventService userEventService
+            ClientEventService clientEventService
     ) {
         this.properties = properties;
         this.bot = bot;
-        this.userEventService = userEventService;
+        this.clientEventService = clientEventService;
     }
 
     @Override
@@ -41,7 +41,7 @@ public final class UsersMessageHandler implements IMessageHandler {
 
     @Override
     public void handle(Update update) {
-        Set<String> users = userEventService.getUsers();
+        Set<String> users = clientEventService.getUsers();
 
         Long adminChatId = properties.getChat();
 

@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserEventService {
+public class ClientEventService {
 
     private final TelegramBot bot;
     private final TelegramBotProperties properties;
@@ -24,7 +24,7 @@ public class UserEventService {
     private final Set<String> users = new HashSet<>();
 
     @Autowired
-    public UserEventService(
+    public ClientEventService(
             TelegramBot bot,
             TelegramBotProperties properties
     ) {
@@ -32,7 +32,7 @@ public class UserEventService {
         this.properties = properties;
     }
 
-    public void userConnected(ClientConnectedEvent event) {
+    public void clientConnected(ClientConnectedEvent event) {
         Long adminChatId = properties.getChat();
 
         if (users.contains(event.username())) {
@@ -65,7 +65,7 @@ public class UserEventService {
         bot.execute(sendMessage);
     }
 
-    public void userDisconnected(ClientDisconnectedEvent event) {
+    public void clientDisconnected(ClientDisconnectedEvent event) {
         Long adminChatId = properties.getChat();
 
         if (!users.contains(event.username())) {
