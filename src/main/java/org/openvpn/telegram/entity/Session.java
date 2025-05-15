@@ -1,11 +1,8 @@
 package org.openvpn.telegram.entity;
 
 import jakarta.persistence.*;
-import org.openvpn.telegram.constants.TableNames;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Date;
+import org.openvpn.telegram.constants.TableNames;
 
 @Entity
 @Table(name = TableNames.SESSIONS)

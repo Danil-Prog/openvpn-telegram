@@ -1,13 +1,12 @@
 package org.openvpn.telegram.telnet.parser;
 
-import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
-import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ConnectedClientParser implements TelnetMessageParser<ClientConnectedEvent> {

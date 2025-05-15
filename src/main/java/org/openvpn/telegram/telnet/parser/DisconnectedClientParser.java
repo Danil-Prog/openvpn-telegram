@@ -1,12 +1,11 @@
 package org.openvpn.telegram.telnet.parser;
 
-import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
-import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
+import org.springframework.stereotype.Component;
 
 @Component
 public class DisconnectedClientParser implements TelnetMessageParser<ClientDisconnectedEvent> {

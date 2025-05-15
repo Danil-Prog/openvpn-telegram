@@ -1,16 +1,15 @@
 package org.openvpn.telegram.telnet;
 
 import jakarta.annotation.PostConstruct;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.openvpn.telegram.telnet.events.TelnetEvent;
 import org.openvpn.telegram.telnet.listeners.ITelnetEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 public class TelnetEventManager {

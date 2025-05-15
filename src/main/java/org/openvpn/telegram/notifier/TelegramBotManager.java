@@ -6,6 +6,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
 import org.openvpn.telegram.notifier.handlers.IMessageHandler;
 import org.openvpn.telegram.notifier.handlers.TypeListener;
@@ -13,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class TelegramBotManager {
@@ -28,9 +27,11 @@ public class TelegramBotManager {
     private final Logger logger = LoggerFactory.getLogger(TelegramBotManager.class);
 
     @Autowired
-    public TelegramBotManager(TelegramBot bot,
-                              TelegramBotProperties properties,
-                              List<IMessageHandler> messageHandlers) {
+    public TelegramBotManager(
+            TelegramBot bot,
+            TelegramBotProperties properties,
+            List<IMessageHandler> messageHandlers
+    ) {
         this.messageHandlers = messageHandlers;
         this.properties = properties;
         this.bot = bot;

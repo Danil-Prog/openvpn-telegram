@@ -1,5 +1,6 @@
 package org.openvpn.telegram.service;
 
+import java.util.Optional;
 import org.openvpn.telegram.entity.Client;
 import org.openvpn.telegram.repository.ClientRepository;
 import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
@@ -7,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class MonitoringService {
@@ -27,7 +26,6 @@ public class MonitoringService {
 
         optionalClient.ifPresent(client -> {
             logger.info("Updating user information for username[{}]", event.username());
-
 
         });
 

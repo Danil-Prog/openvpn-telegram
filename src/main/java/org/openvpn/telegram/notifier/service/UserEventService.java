@@ -4,17 +4,16 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
-import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
-import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
-import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
+import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
+import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
+import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserEventService {

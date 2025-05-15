@@ -1,10 +1,9 @@
 package org.openvpn.telegram.entity;
 
 import jakarta.persistence.*;
-import org.openvpn.telegram.constants.TableNames;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.openvpn.telegram.constants.TableNames;
 
 @Entity
 @Table(name = TableNames.NOTIFICATION_SETTINGS)

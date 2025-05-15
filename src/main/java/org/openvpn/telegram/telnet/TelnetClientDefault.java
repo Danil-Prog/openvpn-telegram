@@ -1,17 +1,16 @@
 package org.openvpn.telegram.telnet;
 
 import jakarta.annotation.PreDestroy;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.openvpn.telegram.configuration.properties.TelnetConnectionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 
 @Component
 public class TelnetClientDefault implements ITelnetClient {

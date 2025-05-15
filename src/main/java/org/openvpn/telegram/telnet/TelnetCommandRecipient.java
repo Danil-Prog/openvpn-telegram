@@ -1,6 +1,12 @@
 package org.openvpn.telegram.telnet;
 
 import jakarta.annotation.PostConstruct;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import org.openvpn.telegram.telnet.events.TelnetEvent;
 import org.openvpn.telegram.telnet.parser.TelnetMessageParser;
 import org.slf4j.Logger;
@@ -8,13 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Receives and processes telnet messages, generates events
@@ -32,12 +31,11 @@ public class TelnetCommandRecipient {
 
     @Autowired
     public TelnetCommandRecipient(
-            @Qualifier("telnetClientDefault")
-            ITelnetClient telnetClient,
-            @Qualifier("telnetCommandSender")
-            ICommandSender commandSender,
+            @Qualifier("telnetClientDefault") ITelnetClient telnetClient,
+            @Qualifier("telnetCommandSender") ICommandSender commandSender,
             TelnetEventManager eventManager,
-            List<TelnetMessageParser<?>> telnetMessageParsers) {
+            List<TelnetMessageParser<?>> telnetMessageParsers
+    ) {
         this.telnetClient = telnetClient;
         this.telnetMessageParsers = telnetMessageParsers;
         this.commandSender = commandSender;

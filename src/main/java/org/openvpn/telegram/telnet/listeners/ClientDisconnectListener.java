@@ -1,6 +1,5 @@
 package org.openvpn.telegram.telnet.listeners;
 
-import org.openvpn.telegram.notifier.handlers.impl.UsersMessageHandler;
 import org.openvpn.telegram.notifier.service.UserEventService;
 import org.openvpn.telegram.service.NotificationSettingsService;
 import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;

@@ -3,6 +3,8 @@ package org.openvpn.telegram.notifier.handlers.impl;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
 import org.openvpn.telegram.notifier.handlers.IMessageHandler;
 import org.openvpn.telegram.notifier.handlers.TypeListener;
@@ -10,9 +12,6 @@ import org.openvpn.telegram.notifier.service.UserEventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public final class UsersMessageHandler implements IMessageHandler {
