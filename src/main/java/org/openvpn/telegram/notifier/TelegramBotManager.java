@@ -7,7 +7,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
-import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
+import org.openvpn.telegram.config.properties.TelegramBotProperties;
 import org.openvpn.telegram.notifier.handlers.IMessageHandler;
 import org.openvpn.telegram.notifier.handlers.TypeListener;
 import org.slf4j.Logger;

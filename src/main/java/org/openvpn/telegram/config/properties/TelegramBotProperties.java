@@ -1,4 +1,4 @@
-package org.openvpn.telegram.configuration.properties;
+package org.openvpn.telegram.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

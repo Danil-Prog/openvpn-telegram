@@ -27,8 +27,7 @@ public class Session {
     private Date timeDisconnected;
 
     @Column(name = "duration")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date sessionDuration;
+    private Long sessionDurationSeconds;
 
     public Long getId() {
         return id;
@@ -70,11 +69,11 @@ public class Session {
         this.timeDisconnected = timeDisconnected;
     }
 
-    public Date getSessionDuration() {
-        return sessionDuration;
+    public Long getSessionDurationSeconds() {
+        return sessionDurationSeconds;
     }
 
-    public void setSessionDuration(Date sessionDuration) {
-        this.sessionDuration = sessionDuration;
+    public void setSessionDurationSeconds(Long sessionDurationSeconds) {
+        this.sessionDurationSeconds = sessionDurationSeconds;
     }
 }

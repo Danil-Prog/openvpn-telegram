@@ -1,19 +1,19 @@
-package org.openvpn.telegram.configuration;
+package org.openvpn.telegram.config;
 
 import com.pengrad.telegrambot.TelegramBot;
 import org.apache.commons.net.telnet.TelnetClient;
-import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
+import org.openvpn.telegram.config.properties.TelegramBotProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class OpenVpnTelegramConfiguration {
+public class OpenVpnTelegramConfig {
 
     private final TelegramBotProperties properties;
 
     @Autowired
-    public OpenVpnTelegramConfiguration(TelegramBotProperties properties) {
+    public OpenVpnTelegramConfig(TelegramBotProperties properties) {
         this.properties = properties;
     }
 

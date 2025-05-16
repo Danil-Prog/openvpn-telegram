@@ -21,7 +21,7 @@
 
             <column name="time_disconnected" type="TIMESTAMP"/>
 
-            <column name="duration" type="TIMESTAMP"/>
+            <column name="duration" type="BIGINT"/>
 
         </createTable>
 

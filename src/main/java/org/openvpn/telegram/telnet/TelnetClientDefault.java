@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import org.apache.commons.net.telnet.TelnetClient;
-import org.openvpn.telegram.configuration.properties.TelnetConnectionProperties;
+import org.openvpn.telegram.config.properties.TelnetConnectionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

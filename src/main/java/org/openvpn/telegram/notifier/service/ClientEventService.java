@@ -9,7 +9,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
-import org.openvpn.telegram.configuration.properties.TelegramBotProperties;
+import org.openvpn.telegram.config.properties.TelegramBotProperties;
 import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
 import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
 import org.springframework.beans.factory.annotation.Autowired;

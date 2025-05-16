@@ -2,6 +2,7 @@ package org.openvpn.telegram.service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.openvpn.telegram.entity.Session;
 import org.openvpn.telegram.repository.ClientRepository;
@@ -43,8 +44,22 @@ public class MonitoringService {
             return;
         }
 
-        Connection connection = new Connection(event.username(), event.ip(), event.timeConnected());
+        Connection connection = new Connection(
+                event.username(),
+                event.ip(),
+                event.timeConnected(),
+                0L,
+                0L
+        );
+
         connections.add(connection);
+    }
+
+    public synchronized void updateClientConnection() {
+        Connection connection = findConnectionByUsername("");
+
+        connection.bytesReceived += connection.bytesReceived + 1L;
+        connection.bytesSent += connection.bytesSent + 1L;
     }
 
     public synchronized void clientDisconnected(ClientDisconnectedEvent event) {
@@ -59,14 +74,28 @@ public class MonitoringService {
         this.createClientSession(connection);
     }
 
+    public boolean connectionsExist() {
+        return !connections.isEmpty();
+    }
+
     private void createClientSession(Connection connection) {
         Session session = new Session();
-        session.setTimeConnected(connection.getConnectedAt());
+
+        Date disconnectedAt = Date.from(Instant.now());
+        Date connectedAt = Date.from(connection.connectedAt);
+        Long sessionDurationSeconds = disconnectedAt.getTime() - connectedAt.getTime();
+
+        session.setSessionDurationSeconds(sessionDurationSeconds);
+
+        session.setTimeDisconnected(disconnectedAt);
+        session.setTimeConnected(connectedAt);
+        session.setBytesReceived(1L);
+        session.setBytesSent(1L);
     }
 
     private Connection findConnectionByUsername(String username) {
         return connections.stream()
-                .filter(connection -> connection.getUsername().equals(username))
+                .filter(connection -> connection.username.equals(username))
                 .findFirst().orElse(null);
     }
 
@@ -75,23 +104,21 @@ public class MonitoringService {
         private final String username;
         private final String ip;
         private final Instant connectedAt;
+        private Long bytesReceived;
+        private Long bytesSent;
 
-        private Connection(String username, String ip, Instant connectedAt) {
+        private Connection(
+                String username,
+                String ip,
+                Instant connectedAt,
+                Long bytesReceived,
+                Long bytesSent
+        ) {
             this.username = username;
             this.ip = ip;
             this.connectedAt = connectedAt;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getIp() {
-            return ip;
-        }
-
-        public Instant getConnectedAt() {
-            return connectedAt;
+            this.bytesReceived = bytesReceived;
+            this.bytesSent = bytesSent;
         }
     }
 }
