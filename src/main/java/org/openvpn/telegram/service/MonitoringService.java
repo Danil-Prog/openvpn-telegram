@@ -36,10 +36,10 @@ public class MonitoringService {
         this.sessionRepository = sessionRepository;
     }
 
-    public synchronized void clientConnected(ClientConnectedEvent event) {
+    public synchronized void addClientConnection(ClientConnectedEvent event) {
         boolean clientConnectedExist = findConnectionByUsername(event.username()) == null;
 
-        if (clientConnectedExist) {
+        if (!clientConnectedExist) {
             logger.info("Client connection already exist: username[{}], ip[{}]", event.username(), event.ip());
             return;
         }

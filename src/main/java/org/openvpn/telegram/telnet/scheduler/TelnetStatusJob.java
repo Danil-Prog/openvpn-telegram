@@ -30,10 +30,11 @@ public class TelnetStatusJob {
     @Scheduled(fixedDelayString = "PT05S")
     public void execute() {
         logger.debug("Executing TelnetStatusJob");
+
         System.out.println("Executing TelnetStatusJob");
+
         // We request the status only if there are currently connected clients
         if (monitoringService.connectionsExist()) {
-            System.out.println("Connections exist");
             telnetCommandSender.send(TELNET_COMMAND);
         }
 
