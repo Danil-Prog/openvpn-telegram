@@ -26,7 +26,7 @@ public class TelnetEventManager {
 
     @PostConstruct
     public void init() {
-        new Thread(this::handle).start();
+        Thread.startVirtualThread(this::handle);
     }
 
     /**

@@ -46,7 +46,7 @@ public class TelnetCommandRecipient {
 
     @PostConstruct
     public void init() {
-        new Thread(this::handle).start();
+        Thread.startVirtualThread(this::handle);
     }
 
     private void handle() {

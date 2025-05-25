@@ -42,7 +42,7 @@ public class TelegramBotManager {
      */
     @PostConstruct
     public void init() {
-        new Thread(this::telegramBotStart).start();
+        Thread.startVirtualThread(this::telegramBotStart);
     }
 
     private void telegramBotStart() {
