@@ -1,14 +1,15 @@
 package org.openvpn.telegram.service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import org.openvpn.telegram.dto.ClientDto;
+import org.openvpn.telegram.entity.Client;
 import org.openvpn.telegram.entity.Session;
 import org.openvpn.telegram.repository.ClientRepository;
 import org.openvpn.telegram.repository.SessionRepository;
 import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
 import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
+import org.openvpn.telegram.telnet.events.StatusCommandEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ public class MonitoringService {
                 event.username(),
                 event.ip(),
                 event.timeConnected(),
+                null,
                 0L,
                 0L
         );
@@ -55,11 +57,19 @@ public class MonitoringService {
         connections.add(connection);
     }
 
-    public synchronized void updateClientConnection() {
-        Connection connection = findConnectionByUsername("");
+    public synchronized void updateClientConnections(StatusCommandEvent event) {
+        connections.forEach(connection -> {
 
-        connection.bytesReceived += connection.bytesReceived + 1L;
-        connection.bytesSent += connection.bytesSent + 1L;
+            // Update connection state, if client contain with list connections
+            List<String> allClientUsernames = event.clientConnections().stream().map(ClientDto::commonName).toList();
+
+            if (allClientUsernames.contains(connection.username)) {
+                connection.bytesReceived += connection.bytesReceived + 1L;
+                connection.bytesSent += connection.bytesSent + 1L;
+            } else {
+                this.closeClientSessionByUsername(connection.username);
+            }
+        });
     }
 
     public synchronized void clientDisconnected(ClientDisconnectedEvent event) {
@@ -93,6 +103,35 @@ public class MonitoringService {
         session.setBytesSent(1L);
     }
 
+    private void closeClientSessionByUsername(String username) {
+        Connection connection = findConnectionByUsername(username);
+
+        if (connection == null) {
+            logger.info("Client connection not found: username[{}]", username);
+            return;
+        }
+
+        Session newSession = new Session();
+        newSession.setTimeConnected(Date.from(connection.connectedAt));
+
+        Optional<Client> clientOptional = clientRepository.findByUsername(username);
+        if (clientOptional.isPresent()) {
+            logger.info("Update session for client with username `{}`", username);
+            Client client = clientOptional.get();
+            client.setTraffic(client.getTraffic() + connection.);
+            client.getSessions().add(newSession);
+            clientRepository.save(client);
+        } else {
+            Client newClient = new Client();
+            newClient.setEnabled(true);
+            newClient.setUsername(username);
+            newClient.setIp(connection.ip);
+            newClient.setSessions(Collections.singletonList(newSession));
+
+            clientRepository.save(newClient);
+        }
+    }
+
     private Connection findConnectionByUsername(String username) {
         return connections.stream()
                 .filter(connection -> connection.username.equals(username))
@@ -111,6 +150,7 @@ public class MonitoringService {
                 String username,
                 String ip,
                 Instant connectedAt,
+                Instant disconnectedAt,
                 Long bytesReceived,
                 Long bytesSent
         ) {
