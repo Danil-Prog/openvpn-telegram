@@ -23,17 +23,18 @@ public class TelnetClientDefault implements ITelnetClient {
 
     @Autowired
     public TelnetClientDefault(
-            TelnetConnectionProperties telnetConnectionProperties,
-            TelnetClient telnetClient
+            TelnetClient telnetClient,
+            TelnetConnectionProperties telnetConnectionProperties
     ) {
-        this.telnetConnectionProperties = telnetConnectionProperties;
         this.telnetClient = telnetClient;
-        connect();
+        this.telnetConnectionProperties = telnetConnectionProperties;
+
+        this.connect();
+        this.configurationTelnetClient();
     }
 
     @Override
     public void connect() {
-        telnetClient.setConnectTimeout(3000);
         this.reconnect();
 
         logger.info(
@@ -46,8 +47,13 @@ public class TelnetClientDefault implements ITelnetClient {
     @PreDestroy
     @Override
     public void disconnect() {
-        logger.info("Disconnect from telnet server..");
         try {
+            if (!telnetClient.isConnected()) {
+                logger.error("Telnet client is not connected");
+                return;
+            }
+
+            logger.info("Disconnect from telnet server..");
             telnetClient.disconnect();
         } catch (IOException e) {
             logger.error("Ooops! An error occurred while disconnecting telnet server", e);
@@ -81,7 +87,13 @@ public class TelnetClientDefault implements ITelnetClient {
 
                     // Check if connect restored
                     if (telnetClient.isConnected()) {
-                        logger.info("Successful reconnected to {}:{}", telnetConnectionProperties.getHost(), telnetConnectionProperties.getPort());
+
+                        logger.info(
+                                "Successful reconnected to {}:{}",
+                                telnetConnectionProperties.getHost(),
+                                telnetConnectionProperties.getPort()
+                        );
+
                         return true;
                     }
 
@@ -108,5 +120,9 @@ public class TelnetClientDefault implements ITelnetClient {
         } catch (IOException e) {
             logger.error("Failed connect to telnet server, reason: {}", e.getMessage());
         }
+    }
+
+    private void configurationTelnetClient() {
+        this.telnetClient.setConnectTimeout(3000);
     }
 }

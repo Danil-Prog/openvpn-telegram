@@ -1,12 +1,13 @@
 package org.openvpn.telegram.service;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import org.openvpn.telegram.dto.ClientDto;
 import org.openvpn.telegram.entity.Client;
 import org.openvpn.telegram.entity.Session;
-import org.openvpn.telegram.repository.ClientRepository;
-import org.openvpn.telegram.repository.SessionRepository;
 import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
 import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
 import org.openvpn.telegram.telnet.events.StatusCommandEvent;
@@ -18,8 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MonitoringService {
 
-    private final ClientRepository clientRepository;
-    private final SessionRepository sessionRepository;
+    private final ClientService clientService;
 
     private final Logger logger = LoggerFactory.getLogger(MonitoringService.class);
 
@@ -29,12 +29,8 @@ public class MonitoringService {
     private static final List<Connection> connections = new ArrayList<>();
 
     @Autowired
-    public MonitoringService(
-            ClientRepository clientRepository,
-            SessionRepository sessionRepository
-    ) {
-        this.clientRepository = clientRepository;
-        this.sessionRepository = sessionRepository;
+    public MonitoringService(ClientService clientService) {
+        this.clientService = clientService;
     }
 
     public synchronized void addClientConnection(ClientConnectedEvent event) {
@@ -111,25 +107,30 @@ public class MonitoringService {
             return;
         }
 
-        Session newSession = new Session();
-        newSession.setTimeConnected(Date.from(connection.connectedAt));
+        Session session = new Session();
+        session.setTimeConnected(Date.from(connection.connectedAt));
+        session.setTimeDisconnected(Date.from(connection.disconnectedAt));
 
-        Optional<Client> clientOptional = clientRepository.findByUsername(username);
+        Optional<Client> clientOptional = clientService.getClientByUsername(username);
+        Client client;
+
         if (clientOptional.isPresent()) {
-            logger.info("Update session for client with username `{}`", username);
-            Client client = clientOptional.get();
-            client.setTraffic(client.getTraffic() + connection.);
-            client.getSessions().add(newSession);
-            clientRepository.save(client);
-        } else {
-            Client newClient = new Client();
-            newClient.setEnabled(true);
-            newClient.setUsername(username);
-            newClient.setIp(connection.ip);
-            newClient.setSessions(Collections.singletonList(newSession));
+            client = clientOptional.get();
+            client.setTraffic(client.getTraffic() + connection.bytesReceived + connection.bytesSent);
 
-            clientRepository.save(newClient);
+            client.getSessions().add(session);
+        } else {
+            client = new Client();
+            client.setEnabled(true);
+            client.setUsername(username);
+            client.setIp(connection.ip);
+
+            client.addSession(session);
         }
+
+        clientService.createOrUpdateClient(client);
+
+        logger.info("Update client session: username[{}], ip[{}]", username, connection.ip);
     }
 
     private Connection findConnectionByUsername(String username) {
@@ -143,6 +144,7 @@ public class MonitoringService {
         private final String username;
         private final String ip;
         private final Instant connectedAt;
+        private final Instant disconnectedAt;
         private Long bytesReceived;
         private Long bytesSent;
 
@@ -157,6 +159,7 @@ public class MonitoringService {
             this.username = username;
             this.ip = ip;
             this.connectedAt = connectedAt;
+            this.disconnectedAt = disconnectedAt;
             this.bytesReceived = bytesReceived;
             this.bytesSent = bytesSent;
         }

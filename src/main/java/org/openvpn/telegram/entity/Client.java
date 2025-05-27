@@ -1,6 +1,7 @@
 package org.openvpn.telegram.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import org.openvpn.telegram.constants.TableNames;
 
@@ -30,7 +31,7 @@ public class Client {
             joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "session_id")
     )
-    private List<Session> sessions;
+    private List<Session> sessions = new ArrayList<>();
 
     public void setId(Long id) {
         this.id = id;
@@ -76,7 +77,7 @@ public class Client {
         return sessions;
     }
 
-    public void setSessions(List<Session> sessions) {
-        this.sessions = sessions;
+    public void addSession(Session session) {
+        this.sessions.add(session);
     }
 }
