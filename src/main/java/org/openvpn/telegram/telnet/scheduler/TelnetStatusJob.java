@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class TelnetStatusJob {
 
+    private Boolean firstLaunch = true;
+
     private final TelnetCommandSender telnetCommandSender;
     private final MonitoringService monitoringService;
 
@@ -31,12 +33,12 @@ public class TelnetStatusJob {
     public void execute() {
         logger.debug("Executing TelnetStatusJob");
 
-        System.out.println("Executing TelnetStatusJob");
-
         // We request the status only if there are currently connected clients
-        if (monitoringService.connectionsExist()) {
+        if (monitoringService.connectionsIsNotEmpty() || firstLaunch) {
             telnetCommandSender.send(TELNET_COMMAND);
         }
+
+        firstLaunch = false;
 
         logger.debug("TelnetStatusJob executed");
     }

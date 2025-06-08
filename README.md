@@ -55,10 +55,10 @@ Available parameters
 
 | Parameters             | Description                                        |
 |:-----------------------|----------------------------------------------------|
-| telnet.connection.host | Set IP for telnet server with OpenVPN management   |
-| telnet.connection.port | Set port for telnet server with OpenVPN management |
-| telegram.bot.token     | Telegram bot token, used for notifier on events    |
-| telegram.bot.chat      | Chat id telegram account administrator             |
+| TELNET_CONNECTION_HOST | Set IP for telnet server with OpenVPN management   |
+| TELNET_CONNECTION_PORT | Set port for telnet server with OpenVPN management |
+| TELEGRAM_BOT_TOKEN     | Telegram bot token, used for notifier on events    |
+| TELEGRAM_BOT_CHAT      | Chat id telegram account administrator             |
 
 Edit the .env file:
 

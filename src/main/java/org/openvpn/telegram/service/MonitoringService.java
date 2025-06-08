@@ -80,7 +80,7 @@ public class MonitoringService {
         this.createClientSession(connection);
     }
 
-    public boolean connectionsExist() {
+    public boolean connectionsIsNotEmpty() {
         return !connections.isEmpty();
     }
 
@@ -97,6 +97,15 @@ public class MonitoringService {
         session.setTimeConnected(connectedAt);
         session.setBytesReceived(1L);
         session.setBytesSent(1L);
+
+        Client client = clientService.getClientByUsername(connection.username).orElse(null);
+
+        if (client == null) {
+            throw new IllegalArgumentException("Client not found: " + connection.username);
+        }
+
+        client.addSession(session);
+        clientService.createOrUpdateClient(client);
     }
 
     private void closeClientSessionByUsername(String username) {
@@ -109,7 +118,7 @@ public class MonitoringService {
 
         Session session = new Session();
         session.setTimeConnected(Date.from(connection.connectedAt));
-        session.setTimeDisconnected(Date.from(connection.disconnectedAt));
+        session.setTimeDisconnected(Date.from(Instant.now()));
 
         Optional<Client> clientOptional = clientService.getClientByUsername(username);
         Client client;
