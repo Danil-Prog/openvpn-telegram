@@ -101,7 +101,7 @@ public class MonitoringService {
         Client client = clientService.getClientByUsername(connection.username).orElse(null);
 
         if (client == null) {
-            throw new IllegalArgumentException("Client not found: " + connection.username);
+            throw new IllegalArgumentException("Client with name " + connection.username + " not found.");
         }
 
         client.addSession(session);
@@ -121,6 +121,7 @@ public class MonitoringService {
         session.setTimeDisconnected(Date.from(Instant.now()));
 
         Optional<Client> clientOptional = clientService.getClientByUsername(username);
+
         Client client;
 
         if (clientOptional.isPresent()) {

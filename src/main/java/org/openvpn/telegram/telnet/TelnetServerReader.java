@@ -7,8 +7,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import org.openvpn.telegram.telnet.events.TelnetEvent;
-import org.openvpn.telegram.telnet.parser.TelnetMessageParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +20,7 @@ import org.springframework.stereotype.Component;
 public class TelnetServerReader {
 
     private final ICommandSender commandSender;
-    private final TelnetEventManager eventManager;
     private final ITelnetClient telnetClient;
-    private final List<TelnetMessageParser<?>> telnetMessageParsers;
     private final List<String> buffer = new ArrayList<>();
 
     private final UnprocessCommandReceiver unprocessCommandReceiver;
@@ -35,14 +31,10 @@ public class TelnetServerReader {
     public TelnetServerReader(
             @Qualifier("telnetClientDefault") ITelnetClient telnetClient,
             @Qualifier("telnetCommandSender") ICommandSender commandSender,
-            TelnetEventManager eventManager,
-            List<TelnetMessageParser<?>> telnetMessageParsers,
             UnprocessCommandReceiver unprocessCommandReceiver
     ) {
         this.telnetClient = telnetClient;
-        this.telnetMessageParsers = telnetMessageParsers;
         this.commandSender = commandSender;
-        this.eventManager = eventManager;
         this.unprocessCommandReceiver = unprocessCommandReceiver;
 
         new DefaultTelnetTerminalConfiguration().configure();
@@ -67,9 +59,6 @@ public class TelnetServerReader {
 
     private void process() throws IOException, InterruptedException {
         BufferedReader reader = telnetClient.getStreamReader();
-        buffer.clear();
-
-        telnetClient.getStreamReader().lines().forEach(unprocessCommandReceiver::receive);
 
         Instant start = Instant.now();
         Duration timeout = Duration.ofSeconds(1);
@@ -87,14 +76,8 @@ public class TelnetServerReader {
         }
 
         if (!buffer.isEmpty()) {
-            for (TelnetMessageParser<?> parser : telnetMessageParsers) {
-                TelnetEvent event = parser.parse(buffer);
-
-                if (event != null) {
-                    eventManager.publish(event);
-                    logger.info("Event with type {} generated", event.getClass().getSimpleName());
-                }
-            }
+            unprocessCommandReceiver.receive(buffer);
+            unprocessCommandReceiver.process();
 
             buffer.clear();
         }
