@@ -15,7 +15,7 @@ public class UnprocessCommandReceiver {
     private final TelnetEventManager eventManager;
     private final List<TelnetMessageParser<?>> telnetMessageParsers;
 
-    private final BlockingQueue<String> block;
+    private final BlockingQueue<String> blocks;
 
     private static final Logger logger = LoggerFactory.getLogger(UnprocessCommandReceiver.class);
 
@@ -25,17 +25,25 @@ public class UnprocessCommandReceiver {
     ) {
         this.telnetMessageParsers = telnetMessageParsers;
         this.eventManager = eventManager;
-        this.block = new LinkedBlockingQueue<>();
+        this.blocks = new LinkedBlockingQueue<>();
     }
 
+    /**
+     * Receives the terminal output.
+     *
+     * @param output - received response from telnet server
+     */
     public synchronized void receive(List<String> output) {
-        block.addAll(output);
+        blocks.addAll(output);
     }
 
+    /**
+     * Starts the process of processing this output.
+     */
     public synchronized void process() {
-        logger.info("Pull unprocessing commands, pull size: {}", block.size());
+        logger.info("Pull unprocessing commands, pull size: {} lines", blocks.size());
 
-        var chunk = block.stream().toList();
+        var chunk = blocks.stream().toList();
 
         for (TelnetMessageParser<?> parser : telnetMessageParsers) {
             TelnetEvent event = parser.parse(chunk);
@@ -44,7 +52,7 @@ public class UnprocessCommandReceiver {
                 eventManager.publish(event);
                 logger.info("Event with type {} generated", event.getClass().getSimpleName());
 
-                block.removeAll(chunk);
+                blocks.removeAll(chunk);
             }
         }
     }

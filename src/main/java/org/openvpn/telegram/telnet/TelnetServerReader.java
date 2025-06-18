@@ -75,12 +75,18 @@ public class TelnetServerReader {
             }
         }
 
-        if (!buffer.isEmpty()) {
-            unprocessCommandReceiver.receive(buffer);
-            unprocessCommandReceiver.process();
+        processBufferAndClear();
+    }
 
-            buffer.clear();
-        }
+    private void processBufferAndClear() {
+        Thread.startVirtualThread(() -> {
+            if (!buffer.isEmpty()) {
+                unprocessCommandReceiver.receive(buffer);
+                unprocessCommandReceiver.process();
+
+                buffer.clear();
+            }
+        });
     }
 
     /**

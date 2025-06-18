@@ -34,7 +34,7 @@ public class MonitoringService {
     }
 
     public synchronized void addClientConnection(ClientConnectedEvent event) {
-        boolean clientConnectedExist = findConnectionByUsername(event.username()) == null;
+        boolean clientConnectedExist = findConnectionByUsername(event.username()) != null;
 
         if (!clientConnectedExist) {
             logger.info("Client connection already exist: username[{}], ip[{}]", event.username(), event.ip());
@@ -68,7 +68,7 @@ public class MonitoringService {
         });
     }
 
-    public synchronized void clientDisconnected(ClientDisconnectedEvent event) {
+    public synchronized void clientDisconnected(ClientDisconnectedEvent event) throws IllegalArgumentException {
         Connection connection = findConnectionByUsername(event.username());
 
         if (connection == null) {
@@ -84,7 +84,7 @@ public class MonitoringService {
         return !connections.isEmpty();
     }
 
-    private void createClientSession(Connection connection) {
+    private void createClientSession(Connection connection) throws IllegalArgumentException {
         Session session = new Session();
 
         Date disconnectedAt = Date.from(Instant.now());
@@ -101,7 +101,12 @@ public class MonitoringService {
         Client client = clientService.getClientByUsername(connection.username).orElse(null);
 
         if (client == null) {
-            throw new IllegalArgumentException("Client with name " + connection.username + " not found.");
+            logger.info("Client did not exist, adding account with name[{}]", connection.username);
+
+            client = new Client();
+            client.setUsername(connection.username);
+            client.setEnabled(true);
+            client.setTraffic(connection.bytesReceived);
         }
 
         client.addSession(session);
