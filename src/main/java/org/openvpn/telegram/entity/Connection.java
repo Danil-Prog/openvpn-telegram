@@ -10,21 +10,23 @@ public class Connection {
     private final Instant disconnectedAt;
     private Long totalBytesReceived;
     private Long totalBytesSent;
+    private Long lastBytesReceived;
+    private Long lastBytesSent;
 
     public Connection(
             String username,
             String ip,
             Instant connectedAt,
             Instant disconnectedAt,
-            Long totalBytesReceived,
-            Long totalBytesSent
+            Long lastBytesReceived,
+            Long lastBytesSent
     ) {
         this.username = username;
         this.ip = ip;
         this.connectedAt = connectedAt;
         this.disconnectedAt = disconnectedAt;
-        this.totalBytesReceived = totalBytesReceived;
-        this.totalBytesSent = totalBytesSent;
+        this.lastBytesReceived = lastBytesReceived;
+        this.lastBytesSent = lastBytesSent;
     }
 
     public String getUsername() {
@@ -57,5 +59,21 @@ public class Connection {
 
     public void setTotalBytesSent(Long totalBytesSent) {
         this.totalBytesSent = totalBytesSent;
+    }
+
+    public Long getLastBytesReceived() {
+        return lastBytesReceived;
+    }
+
+    public void setLastBytesReceived(Long lastBytesReceived) {
+        this.lastBytesReceived = lastBytesReceived;
+    }
+
+    public Long getLastBytesSent() {
+        return lastBytesSent;
+    }
+
+    public void setLastBytesSent(Long lastBytesSent) {
+        this.lastBytesSent = lastBytesSent;
     }
 }

@@ -29,7 +29,7 @@ public class ConnectionService {
         return this.connections.isEmpty();
     }
 
-    public void addConnection(Connection connection) {
+    public synchronized void addConnection(Connection connection) {
         var isExist = getConnectionByUsername(connection.getUsername());
         if (isExist != null) {
             logger.warn("Connection with username {} already exists.", connection.getUsername());
@@ -38,7 +38,7 @@ public class ConnectionService {
         }
     }
 
-    public void deleteConnectionByUsername(String username) {
+    public synchronized void deleteConnectionByUsername(String username) {
         var connection = getConnectionByUsername(username);
         if (connection != null) {
             logger.info("Remove connection from all connections.");
@@ -48,7 +48,7 @@ public class ConnectionService {
         }
     }
 
-    public Connection getConnectionByUsername(String username) {
+    public synchronized Connection getConnectionByUsername(String username) {
         return connections.stream()
                 .filter(connection -> connection.getUsername().equals(username))
                 .findFirst()
