@@ -24,10 +24,7 @@ public class ClientEventService {
     private final Set<String> users = new HashSet<>();
 
     @Autowired
-    public ClientEventService(
-            TelegramBot bot,
-            TelegramBotProperties properties
-    ) {
+    public ClientEventService(TelegramBot bot, TelegramBotProperties properties) {
         this.bot = bot;
         this.properties = properties;
     }

@@ -33,7 +33,7 @@ public class ClientConnectListener implements ITelnetEventListener<ClientConnect
     @Override
     public void onEvent(ClientConnectedEvent event) {
         logger.info("Client connected: username[{}], ip[{}]", event.username(), event.ip());
-        notificationService.clientConnectionNotification(event);
+        notificationService.sendClientConnectionNotification(event);
         monitoringService.addClientConnection(event);
     }
 }

@@ -33,7 +33,7 @@ public class ClientDisconnectListener implements ITelnetEventListener<ClientDisc
     @Override
     public void onEvent(ClientDisconnectedEvent event) {
         logger.info("Client disconnected: username[{}], ip[{}]", event.username(), event.ip());
-        notificationService.clientDisconnectionNotification(event);
+        notificationService.sendClientDisconnectionNotification(event);
         monitoringService.clientDisconnected(event);
     }
 }

@@ -21,13 +21,13 @@ public class NotificationService {
         this.notificationSettingsService = notificationSettingsService;
     }
 
-    public void clientConnectionNotification(ClientConnectedEvent event) {
+    public void sendClientConnectionNotification(ClientConnectedEvent event) {
         if (notificationSettingsService.isNotificationSettingsEnabled()) {
             clientEventService.clientConnected(event);
         }
     }
 
-    public void clientDisconnectionNotification(ClientDisconnectedEvent event) {
+    public void sendClientDisconnectionNotification(ClientDisconnectedEvent event) {
         if (notificationSettingsService.isNotificationSettingsEnabled()) {
             clientEventService.clientDisconnected(event);
         }
