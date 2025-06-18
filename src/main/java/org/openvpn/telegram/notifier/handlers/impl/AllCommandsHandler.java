@@ -9,30 +9,35 @@ import org.openvpn.telegram.notifier.handlers.TypeListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StartMessageHandler implements IMessageHandler {
+public class AllCommandsHandler implements IMessageHandler {
 
     private final TelegramBot bot;
     private final TelegramBotProperties properties;
-    private final TypeListener typeListener = TypeListener.START;
 
-    private static final String START_MESSAGE = "Welcome to OpenVPN Telegram Notifier!\n" +
-            "Server monitoring started.";
+    private final TypeListener typeListener = TypeListener.ALL_COMMANDS;
 
-    public StartMessageHandler(TelegramBot bot, TelegramBotProperties properties) {
+    public AllCommandsHandler(TelegramBot bot, TelegramBotProperties properties) {
         this.bot = bot;
         this.properties = properties;
     }
 
     @Override
     public TypeListener getTypeListener() {
-        return typeListener;
+        return this.typeListener;
     }
 
     @Override
     public void handle(Update update) {
         Long adminChatId = properties.getChat();
+        String message = """
+                Available commands:
+                
+                /users - get all users online
+                /enable_notification - notify about new connections
+                /disable_notification - disable notifications about new connections
+                """;
 
-        SendMessage sendMessage = new SendMessage(adminChatId, START_MESSAGE);
+        SendMessage sendMessage = new SendMessage(adminChatId, message);
         bot.execute(sendMessage);
     }
 }

@@ -18,7 +18,7 @@ public class EnabledNotificationsHandler implements IMessageHandler {
     private final TelegramBotProperties properties;
     private final NotificationSettingsService notificationSettingsService;
 
-    private final TypeListener typeListener = TypeListener.ENABLED_NOTIFICATION;
+    private final TypeListener typeListener = TypeListener.ENABLE_NOTIFICATION;
 
     private final Logger logger = LoggerFactory.getLogger(EnabledNotificationsHandler.class);
 
