@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ClientConnectListener implements ITelnetEventListener<ClientConnectedEvent> {
+public class ClientConnectedListener implements ITelnetEventListener<ClientConnectedEvent> {
 
     private final NotificationService notificationService;
     private final MonitoringService monitoringService;
@@ -17,7 +17,7 @@ public class ClientConnectListener implements ITelnetEventListener<ClientConnect
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public ClientConnectListener(
+    public ClientConnectedListener(
             NotificationService notificationService,
             MonitoringService monitoringService
     ) {

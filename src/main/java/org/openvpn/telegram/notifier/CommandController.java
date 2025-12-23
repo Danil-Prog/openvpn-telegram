@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TelegramBotManager {
+public class CommandController {
 
     private final TelegramBot bot;
     private final TelegramBotProperties properties;
@@ -27,10 +27,10 @@ public class TelegramBotManager {
     private final String ACCESS_DENIED_MESSAGE = "❗ Access denied. You are not the administrator of this bot.";
     private final String COMMAND_NOT_FOUND = "Command not found. Please check command and try again.";
 
-    private final Logger logger = LoggerFactory.getLogger(TelegramBotManager.class);
+    private final Logger logger = LoggerFactory.getLogger(CommandController.class);
 
     @Autowired
-    public TelegramBotManager(
+    public CommandController(
             TelegramBot bot,
             TelegramBotProperties properties,
             List<IMessageHandler> messageHandlers

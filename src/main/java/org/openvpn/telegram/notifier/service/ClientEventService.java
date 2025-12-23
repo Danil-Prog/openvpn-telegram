@@ -84,7 +84,7 @@ public class ClientEventService {
     }
 
     public synchronized Set<String> getUsers() {
-        return users;
+        return this.users;
     }
 
     private String dateTimeFormatter(Instant time) {

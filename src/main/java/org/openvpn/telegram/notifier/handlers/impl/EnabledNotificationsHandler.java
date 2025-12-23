@@ -42,6 +42,7 @@ public class EnabledNotificationsHandler implements IMessageHandler {
         Long adminChatId = properties.getChat();
 
         notificationSettingsService.updateNotificationState(true);
+
         logger.info("Telegram bot notifications enabled");
 
         String message = "Telegram bot notifications enabled";

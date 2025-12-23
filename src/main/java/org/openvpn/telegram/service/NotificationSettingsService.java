@@ -1,6 +1,5 @@
 package org.openvpn.telegram.service;
 
-import java.util.NoSuchElementException;
 import org.openvpn.telegram.entity.NotificationSettings;
 import org.openvpn.telegram.repository.NotificationSettingsRepository;
 import org.slf4j.Logger;
@@ -15,7 +14,7 @@ public class NotificationSettingsService {
     /**
      * Local cache
      */
-    private Boolean isNotificationSettingsEnabled;
+    private Boolean isNotificationEnabled;
 
     /**
      * Notification settings exist in a single instance
@@ -32,28 +31,31 @@ public class NotificationSettingsService {
     }
 
     /**
-     * Disabled TG notification
+     * Disabled/Enabled TG notification
      */
     public void updateNotificationState(boolean state) {
-        notificationSettingsRepository
-                .findById(DEFAULT_NOTIFICATION_SETTINGS_PRESET)
-                .ifPresent(settings -> {
-                    settings.setEnabled(state);
-                    logger.info("Default setting notification state changed to [{}]", state);
-
-                    notificationSettingsRepository.save(settings);
-                    isNotificationSettingsEnabled = state;
-                });
-    }
-
-    public boolean isNotificationSettingsEnabled() {
-        if (isNotificationSettingsEnabled != null) {
-            return isNotificationSettingsEnabled;
+        if (state == isNotificationEnabled) {
+            logger.info("Notification settings already enabled");
+            return;
         }
 
         NotificationSettings settings = notificationSettingsRepository
                 .findById(DEFAULT_NOTIFICATION_SETTINGS_PRESET)
-                .orElseThrow(() -> new NoSuchElementException("Notification settings not found"));
+                .get();
+
+        settings.setEnabledNotification(true);
+
+        notificationSettingsRepository.save(settings);
+        isNotificationEnabled = state;
+    }
+
+    public boolean isNotificationSettingsEnabled() {
+        if (isNotificationEnabled != null) {
+            return isNotificationEnabled;
+        }
+
+        NotificationSettings settings = notificationSettingsRepository
+                .findById(DEFAULT_NOTIFICATION_SETTINGS_PRESET).get();
 
         return settings.getEnabled();
     }

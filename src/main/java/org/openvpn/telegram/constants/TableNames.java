@@ -8,4 +8,5 @@ public final class TableNames {
     public static final String SESSIONS = DB_PREFIX + "sessions";
     public static final String CLIENTS_SESSIONS = DB_PREFIX + "clients_sessions";
     public static final String NOTIFICATION_SETTINGS = DB_PREFIX + "notification_settings";
+    public static final String STATISTICS = DB_PREFIX + "statistics";
 }

@@ -50,6 +50,7 @@ public final class UsersMessageHandler implements IMessageHandler {
             bot.execute(sendMessage);
             return;
         }
+
         String usersFormatted = users.stream().map(it -> " * " + it + "\n").collect(Collectors.joining());
 
         String message = "📋 All connections to VPN server:\n" + usersFormatted;
