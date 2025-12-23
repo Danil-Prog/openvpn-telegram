@@ -1,6 +1,6 @@
 package org.openvpn.telegram.telnet.scheduler;
 
-import org.openvpn.telegram.service.MonitoringService;
+import org.openvpn.telegram.service.ConnectionService;
 import org.openvpn.telegram.telnet.TelnetCommandSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ public class TelnetStatusJob {
     private Boolean firstLaunch = true;
 
     private final TelnetCommandSender telnetCommandSender;
-    private final MonitoringService monitoringService;
+    private final ConnectionService connectionService;
 
     private final Logger logger = LoggerFactory.getLogger(TelnetStatusJob.class);
 
@@ -23,10 +23,10 @@ public class TelnetStatusJob {
     @Autowired
     public TelnetStatusJob(
             TelnetCommandSender telnetCommandSender,
-            MonitoringService monitoringService
+            ConnectionService connectionService
     ) {
         this.telnetCommandSender = telnetCommandSender;
-        this.monitoringService = monitoringService;
+        this.connectionService = connectionService;
     }
 
     @Scheduled(fixedDelayString = "PT05S")
@@ -34,7 +34,7 @@ public class TelnetStatusJob {
         logger.debug("Executing TelnetStatusJob");
 
         // We request the status only if there are currently connected clients
-        if (monitoringService.connectionsIsNotEmpty() || firstLaunch) {
+        if (!connectionService.connectionsIsEmpty() || firstLaunch) {
             telnetCommandSender.send(TELNET_COMMAND);
         }
 

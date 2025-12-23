@@ -14,6 +14,8 @@ public class DisconnectedClientParser implements TelnetMessageParser<ClientDisco
 
     @Override
     public ClientDisconnectedEvent parse(List<String> lines) {
+        ClientDisconnectedEvent result = null;
+
         String username = null;
         String ip = null;
 
@@ -32,10 +34,10 @@ public class DisconnectedClientParser implements TelnetMessageParser<ClientDisco
         }
 
         if (username != null && ip != null) {
-            return new ClientDisconnectedEvent(username, ip, Instant.now());
+            result = new ClientDisconnectedEvent(username, ip, Instant.now());
         }
 
-        return null;
+        return result;
     }
 
 }

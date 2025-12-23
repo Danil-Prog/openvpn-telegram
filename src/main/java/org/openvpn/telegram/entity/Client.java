@@ -25,7 +25,7 @@ public class Client {
     @Column(name = "last_ip_login")
     private String ip;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = TableNames.CLIENTS_SESSIONS,
             joinColumns = @JoinColumn(name = "client_id"),

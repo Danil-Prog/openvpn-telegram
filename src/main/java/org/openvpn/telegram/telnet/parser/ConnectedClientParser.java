@@ -18,6 +18,8 @@ public class ConnectedClientParser implements TelnetMessageParser<ClientConnecte
 
     @Override
     public ClientConnectedEvent parse(List<String> lines) {
+        ClientConnectedEvent result = null;
+
         String username = null;
         String ip = null;
         String platform = null;
@@ -26,18 +28,15 @@ public class ConnectedClientParser implements TelnetMessageParser<ClientConnecte
         for (String line : lines) {
             if (line.startsWith(START_USERNAME_PATTERN)) {
                 username = line.substring(START_USERNAME_PATTERN.length());
-                System.out.println(line);
             }
 
             if (line.startsWith(START_IP_PATTERN)) {
                 ip = line.substring(START_IP_PATTERN.length());
-                System.out.println(line);
 
             }
 
             if (line.startsWith(START_IV_PLAT)) {
                 platform = line.substring(START_IV_PLAT.length());
-                System.out.println(line);
             }
 
             if (line.startsWith(START_TIME_ASCII)) {
@@ -51,9 +50,9 @@ public class ConnectedClientParser implements TelnetMessageParser<ClientConnecte
         }
 
         if (username != null || ip != null) {
-            return new ClientConnectedEvent(username, ip, platform, time);
+            result = new ClientConnectedEvent(username, ip, platform, time);
         }
 
-        return null;
+        return result;
     }
 }

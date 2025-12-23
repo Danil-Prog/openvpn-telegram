@@ -1,12 +1,12 @@
 package org.openvpn.telegram.service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.openvpn.telegram.dto.ClientDto;
 import org.openvpn.telegram.entity.Client;
+import org.openvpn.telegram.entity.Connection;
 import org.openvpn.telegram.entity.Session;
 import org.openvpn.telegram.telnet.events.ClientConnectedEvent;
 import org.openvpn.telegram.telnet.events.ClientDisconnectedEvent;
@@ -20,21 +20,18 @@ import org.springframework.stereotype.Service;
 public class MonitoringService {
 
     private final ClientService clientService;
+    private final ConnectionService connectionService;
 
     private final Logger logger = LoggerFactory.getLogger(MonitoringService.class);
 
-    /**
-     * All clients connections is now
-     */
-    private static final List<Connection> connections = new ArrayList<>();
-
     @Autowired
-    public MonitoringService(ClientService clientService) {
+    public MonitoringService(ClientService clientService, ConnectionService connectionService) {
         this.clientService = clientService;
+        this.connectionService = connectionService;
     }
 
     public synchronized void addClientConnection(ClientConnectedEvent event) {
-        boolean clientConnectedExist = findConnectionByUsername(event.username()) == null;
+        boolean clientConnectedExist = connectionService.getConnectionByUsername(event.username()) != null;
 
         if (!clientConnectedExist) {
             logger.info("Client connection already exist: username[{}], ip[{}]", event.username(), event.ip());
@@ -50,26 +47,26 @@ public class MonitoringService {
                 0L
         );
 
-        connections.add(connection);
+        connectionService.addConnection(connection);
     }
 
     public synchronized void updateClientConnections(StatusCommandEvent event) {
-        connections.forEach(connection -> {
+        connectionService.getConnections().forEach(connection -> {
 
             // Update connection state, if client contain with list connections
             List<String> allClientUsernames = event.clientConnections().stream().map(ClientDto::commonName).toList();
 
-            if (allClientUsernames.contains(connection.username)) {
-                connection.bytesReceived += connection.bytesReceived + 1L;
-                connection.bytesSent += connection.bytesSent + 1L;
+            if (allClientUsernames.contains(connection.getUsername())) {
+                connection.setTotalBytesReceived(connection.getTotalBytesReceived() + 1L);
+                connection.setTotalBytesSent(connection.getTotalBytesSent() + 1L);
             } else {
-                this.closeClientSessionByUsername(connection.username);
+                this.closeClientSessionByUsername(connection.getUsername());
             }
         });
     }
 
-    public synchronized void clientDisconnected(ClientDisconnectedEvent event) {
-        Connection connection = findConnectionByUsername(event.username());
+    public synchronized void clientDisconnected(ClientDisconnectedEvent event) throws IllegalArgumentException {
+        Connection connection = connectionService.getConnectionByUsername(event.username());
 
         if (connection == null) {
             logger.info("Client connection not found: username[{}], ip[{}]", event.username(), event.ip());
@@ -80,15 +77,11 @@ public class MonitoringService {
         this.createClientSession(connection);
     }
 
-    public boolean connectionsIsNotEmpty() {
-        return !connections.isEmpty();
-    }
-
-    private void createClientSession(Connection connection) {
+    private void createClientSession(Connection connection) throws IllegalArgumentException {
         Session session = new Session();
 
         Date disconnectedAt = Date.from(Instant.now());
-        Date connectedAt = Date.from(connection.connectedAt);
+        Date connectedAt = Date.from(connection.getConnectedAt());
         Long sessionDurationSeconds = disconnectedAt.getTime() - connectedAt.getTime();
 
         session.setSessionDurationSeconds(sessionDurationSeconds);
@@ -98,10 +91,15 @@ public class MonitoringService {
         session.setBytesReceived(1L);
         session.setBytesSent(1L);
 
-        Client client = clientService.getClientByUsername(connection.username).orElse(null);
+        Client client = clientService.getClientByUsername(connection.getUsername()).orElse(null);
 
         if (client == null) {
-            throw new IllegalArgumentException("Client not found: " + connection.username);
+            logger.info("Client did not exist, adding account with name[{}]", connection.getUsername());
+
+            client = new Client();
+            client.setUsername(connection.getUsername());
+            client.setEnabled(true);
+            client.setTraffic(connection.getTotalBytesReceived());
         }
 
         client.addSession(session);
@@ -109,7 +107,7 @@ public class MonitoringService {
     }
 
     private void closeClientSessionByUsername(String username) {
-        Connection connection = findConnectionByUsername(username);
+        Connection connection = connectionService.getConnectionByUsername(username);
 
         if (connection == null) {
             logger.info("Client connection not found: username[{}]", username);
@@ -117,60 +115,29 @@ public class MonitoringService {
         }
 
         Session session = new Session();
-        session.setTimeConnected(Date.from(connection.connectedAt));
+        session.setTimeConnected(Date.from(connection.getConnectedAt()));
         session.setTimeDisconnected(Date.from(Instant.now()));
 
         Optional<Client> clientOptional = clientService.getClientByUsername(username);
+
         Client client;
 
         if (clientOptional.isPresent()) {
             client = clientOptional.get();
-            client.setTraffic(client.getTraffic() + connection.bytesReceived + connection.bytesSent);
+            client.setTraffic(client.getTraffic() + connection.getTotalBytesReceived() + connection.getTotalBytesSent());
 
             client.getSessions().add(session);
         } else {
             client = new Client();
             client.setEnabled(true);
             client.setUsername(username);
-            client.setIp(connection.ip);
+            client.setIp(connection.getIp());
 
             client.addSession(session);
         }
 
         clientService.createOrUpdateClient(client);
 
-        logger.info("Update client session: username[{}], ip[{}]", username, connection.ip);
-    }
-
-    private Connection findConnectionByUsername(String username) {
-        return connections.stream()
-                .filter(connection -> connection.username.equals(username))
-                .findFirst().orElse(null);
-    }
-
-    private static class Connection {
-
-        private final String username;
-        private final String ip;
-        private final Instant connectedAt;
-        private final Instant disconnectedAt;
-        private Long bytesReceived;
-        private Long bytesSent;
-
-        private Connection(
-                String username,
-                String ip,
-                Instant connectedAt,
-                Instant disconnectedAt,
-                Long bytesReceived,
-                Long bytesSent
-        ) {
-            this.username = username;
-            this.ip = ip;
-            this.connectedAt = connectedAt;
-            this.disconnectedAt = disconnectedAt;
-            this.bytesReceived = bytesReceived;
-            this.bytesSent = bytesSent;
-        }
+        logger.info("Update client session: username[{}], ip[{}]", username, connection.getIp());
     }
 }

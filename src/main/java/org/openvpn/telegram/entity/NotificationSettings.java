@@ -32,7 +32,7 @@ public class NotificationSettings {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabledNotification(Boolean enabled) {
         this.enabled = enabled;
     }
 

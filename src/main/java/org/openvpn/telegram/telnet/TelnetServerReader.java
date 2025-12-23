@@ -7,8 +7,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import org.openvpn.telegram.telnet.events.TelnetEvent;
-import org.openvpn.telegram.telnet.parser.TelnetMessageParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,27 +17,25 @@ import org.springframework.stereotype.Component;
  * Receives and processes telnet messages, generates events
  */
 @Component
-public class TelnetCommandRecipient {
+public class TelnetServerReader {
 
     private final ICommandSender commandSender;
-    private final TelnetEventManager eventManager;
     private final ITelnetClient telnetClient;
-    private final List<TelnetMessageParser<?>> telnetMessageParsers;
     private final List<String> buffer = new ArrayList<>();
 
-    private static final Logger logger = LoggerFactory.getLogger(TelnetCommandRecipient.class);
+    private final UnprocessCommandReceiver unprocessCommandReceiver;
+
+    private static final Logger logger = LoggerFactory.getLogger(TelnetServerReader.class);
 
     @Autowired
-    public TelnetCommandRecipient(
+    public TelnetServerReader(
             @Qualifier("telnetClientDefault") ITelnetClient telnetClient,
             @Qualifier("telnetCommandSender") ICommandSender commandSender,
-            TelnetEventManager eventManager,
-            List<TelnetMessageParser<?>> telnetMessageParsers
+            UnprocessCommandReceiver unprocessCommandReceiver
     ) {
         this.telnetClient = telnetClient;
-        this.telnetMessageParsers = telnetMessageParsers;
         this.commandSender = commandSender;
-        this.eventManager = eventManager;
+        this.unprocessCommandReceiver = unprocessCommandReceiver;
 
         new DefaultTelnetTerminalConfiguration().configure();
     }
@@ -63,7 +59,6 @@ public class TelnetCommandRecipient {
 
     private void process() throws IOException, InterruptedException {
         BufferedReader reader = telnetClient.getStreamReader();
-        buffer.clear();
 
         Instant start = Instant.now();
         Duration timeout = Duration.ofSeconds(1);
@@ -80,18 +75,18 @@ public class TelnetCommandRecipient {
             }
         }
 
-        if (!buffer.isEmpty()) {
-            for (TelnetMessageParser<?> parser : telnetMessageParsers) {
-                TelnetEvent event = parser.parse(buffer);
+        processBufferAndClear();
+    }
 
-                if (event != null) {
-                    eventManager.publish(event);
-                    logger.info("Event with type {} generated", event.getClass().getSimpleName());
-                }
+    private void processBufferAndClear() {
+        Thread.startVirtualThread(() -> {
+            if (!buffer.isEmpty()) {
+                unprocessCommandReceiver.receive(buffer);
+                unprocessCommandReceiver.process();
+
+                buffer.clear();
             }
-
-            buffer.clear();
-        }
+        });
     }
 
     /**

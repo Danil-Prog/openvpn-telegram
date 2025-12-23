@@ -58,8 +58,8 @@ public class TelnetEventManager {
     private <T extends TelnetEvent> void invokeListener(ITelnetEventListener<T> listener, TelnetEvent event) {
         try {
             listener.onEvent((T) event);
-        } catch (ClassCastException e) {
-            logger.warn("Typecasting error when calling the listener: {}", listener.getClass().getSimpleName(), e);
+        } catch (Exception e) {
+            logger.warn("An error occurred while processing the event. {}", e.getMessage());
         }
     }
 }
